@@ -1,0 +1,4 @@
+Rust version of Twig was developed by:
+
+Colin Kiegel <kiegel@gmx.de>
+Nerijus Arlauskas <nercury@gmail.com>
