@@ -4,21 +4,12 @@
 // file that was distributed with this source code.
 
 /// Twig library for rust
-///
-/// @author NAME <EMAIL>
-
-/////////////
-// imports //
-/////////////
 
 #[macro_use]
 use error::Exception;
 use error::api::GeneralizeTo;
 use std::fmt::{self, Display};
 
-/////////////
-// exports //
-/////////////
 
 pub type EngineError = Exception<EngineErrorCode>;
 pub type EngineResult<T> = Result<T, EngineError>;

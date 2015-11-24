@@ -3,20 +3,7 @@
 // For the copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-/// Rust macro
-///
-/// @author Colin Kiegel <kiegel@gmx.de>
-
-/////////////
-// imports //
-/////////////
-
-
-
-/////////////
-// exports //
-/////////////
-
+/// Twig Error API for error code conversion 
 
 // will be used to transform error codes!
 // can't use Into-trait - because we only have references

@@ -4,19 +4,9 @@
 // file that was distributed with this source code.
 
 /// Twig library for rust
-///
-/// @author NAME <EMAIL>
-
-/////////////
-// imports //
-/////////////
 
 mod error_codes;
 use self::error_codes::{EngineResult, EngineErrorCode, RuntimeResult, RuntimeErrorCode};
-
-/////////////
-// exports //
-/////////////
 
 
 fn foo_engine_error() -> EngineResult<()> {

@@ -3,22 +3,12 @@
 // For the copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-/// Twig base exception.
-///
-/// @author Colin Kiegel <kiegel@gmx.de>
-
-
-/////////////
-// imports //
-/////////////
+/// Twig base exception
 
 use std::fmt::{self, Debug, Display};
 use std::any::Any;
 use std::convert::Into;
 
-/////////////
-// exports //
-/////////////
 
 #[macro_use]
 pub mod macros;

@@ -4,22 +4,9 @@
 // file that was distributed with this source code.
 
 /// Twig library for rust
-///
-/// @author Colin Kiegel <kiegel@gmx.de>
-
-/////////////
-// imports //
-/////////////
-
-
-
-/////////////
-// exports //
-/////////////
 
 #[macro_use]
 pub mod error;
-
 mod test_error;
 
 #[test]
