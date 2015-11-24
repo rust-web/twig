@@ -4,15 +4,3 @@
 // file that was distributed with this source code.
 
 /// Twig library for rust
-///
-/// @author NAME <EMAIL>
-
-/////////////
-// imports //
-/////////////
-
-
-
-/////////////
-// exports //
-/////////////
