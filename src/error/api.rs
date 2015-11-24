@@ -3,7 +3,7 @@
 // For the copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-/// Twig library for rust
+/// Rust macro
 ///
 /// @author Colin Kiegel <kiegel@gmx.de>
 
@@ -17,11 +17,9 @@
 // exports //
 /////////////
 
-#[macro_use]
-pub mod error;
 
-mod test_error;
-
-#[test]
-fn it_works() {
+// will be used to transform error codes!
+// can't use Into-trait - because we only have references
+pub trait GeneralizeTo<T> {
+    fn generalize(&self) -> T;
 }
