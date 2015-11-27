@@ -13,14 +13,14 @@ fn foo_engine_error() -> EngineResult<()> {
     err!(EngineErrorCode::TemplateNotFound {
         name: "hello_world.html.twig".to_string(),
         search_paths: vec![]
-    }).into()
+    })
 }
 
 fn foo_runtime_error() -> RuntimeResult<()> {
     err!(RuntimeErrorCode::InvalidArgumentCount{
         defined: 10,
         given: 4
-    }).into()
+    })
 }
 
 fn foo_chain_error() -> EngineResult<()> {

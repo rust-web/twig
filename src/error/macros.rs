@@ -11,7 +11,7 @@ pub use super::*;
 #[macro_export]
 macro_rules! err {
     ( $code:expr ) => ({
-        ::error::Error::new($code, location!())
+        Err(::error::Error::new($code, location!()))
     });
 }
 
@@ -41,9 +41,11 @@ macro_rules! try_chain {
         match $result {
             Ok(value) => value,
             Err(cause) => {
-                return err!(::error::api::GeneralizeTo::generalize(cause.code()))
+                let code = ::error::api::GeneralizeTo::generalize(cause.code());
+
+                return Err(::error::Error::new(code, location!())
                     .caused_by(cause)
-                    .into()
+                    .into())
             }
         }
     )
