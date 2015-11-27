@@ -3,20 +3,19 @@
 // For the copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-/// Twig base exception
+/// Twig generic error
 
 use std::fmt::{self, Display};
-use std::convert::Into;
 
 
 #[macro_use]
 pub mod macros;
 // use std Error-trait to improve cross-crate compatibility
 // don't mix it up with Err(X)
-pub use std::error::Error as StdError;
+pub use std::error;
 pub mod api;
 
-// generic wrapper around some StdError - adds location support
+// generic wrapper around some ErrorCode - adds location support
 #[derive(Debug)]
 pub struct Error<T>
     where T: api::ErrorCode
@@ -28,7 +27,7 @@ pub struct Error<T>
     // I decided to call this field `code` instead of `error` to not confuse it with the Error trait
     location: Location,
     // chaining is required by std::error::Error
-    cause: Option<Box<StdError>>,
+    cause: Option<Box<error::Error>>,
 }
 
 impl<T> Error<T>
@@ -51,7 +50,7 @@ impl<T> Error<T>
         &self.location
     }
 
-    pub fn caused_by<X: 'static + StdError>(mut self, cause: X) -> Self {
+    pub fn caused_by<X: 'static + error::Error>(mut self, cause: X) -> Self {
         self.cause = Some(Box::new(cause));
 
         self
@@ -71,7 +70,7 @@ impl<T> Error<T>
     }
 }
 
-impl<T> StdError for Error<T>
+impl<T> error::Error for Error<T>
     where T: api::ErrorCode
 {
     fn description(&self) -> &str {
@@ -79,27 +78,18 @@ impl<T> StdError for Error<T>
         &self.code.description()
     }
 
-    fn cause<'a>(&'a self) -> Option<&'a StdError> {
+    fn cause<'a>(&'a self) -> Option<&'a error::Error> {
         // dereference from Option<Box<T>> to Option<&T>
         self.cause.as_ref().map(|x| &**x)
     }
 }
 
-// Error -> Err(Error)
-impl<T, V> Into<Result<V, Error<T>>> for Error<T>
-    where T: api::ErrorCode
-{
-    fn into (self) -> Result<V, Error<T>> {
-        Err(self)
-    }
-}
-
 pub struct ErrorIter<'a> {
-    next: Option<&'a StdError>
+    next: Option<&'a error::Error>
 }
 
 impl<'a> Iterator for ErrorIter<'a> {
-    type Item = &'a StdError;
+    type Item = &'a error::Error;
 
     fn next(&mut self) -> Option<Self::Item> {
         return match self.next {

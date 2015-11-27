@@ -22,7 +22,7 @@ impl GeneralizeTo<EngineErrorCode> for RuntimeErrorCode {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub enum EngineErrorCode {
     TemplateNotFound { name: String, search_paths: Vec<String> },
     RuntimeError
@@ -53,11 +53,27 @@ impl Display for EngineErrorCode {
     }
 }
 
-#[derive(Clone, Debug)]
+// Just for demonstration
+// - lexer and parser could define some objects to indicate their current position
+// .. however we call that
+#[derive(Debug)]
+pub struct MockCursor;
+
+impl Display for MockCursor {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "`{template_name}` line {line} column {column}",
+            template_name = "index.twig.html",
+            line = 11,
+            column = 2)
+    }
+}
+//
+
+#[derive(Debug)]
 /// Runtime error message.
 pub enum RuntimeErrorCode {
     /// Callable invoked with argument count that does not match defined count.
-    InvalidArgumentCount { defined: usize, given: usize },
+    InvalidArgumentCount { defined: usize, given: usize, cursor: MockCursor },
 }
 
 impl ErrorCode for RuntimeErrorCode {
@@ -71,8 +87,11 @@ impl ErrorCode for RuntimeErrorCode {
 impl Display for RuntimeErrorCode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            RuntimeErrorCode::InvalidArgumentCount { ref defined, ref given } => {
-                write!(f, "Target requires {} arguments, called with {}", defined, given)
+            RuntimeErrorCode::InvalidArgumentCount { ref defined, ref given, ref cursor } => {
+                write!(f, "Target requires {defined} arguments, called with {given} for {cursor}",
+                    defined = defined,
+                    given = given,
+                    cursor = cursor)
             }
         }
     }
