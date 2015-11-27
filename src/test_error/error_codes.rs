@@ -5,16 +5,15 @@
 
 /// Twig library for rust
 
-#[macro_use]
-use error::Exception;
-use error::api::GeneralizeTo;
+use error::api::{ErrorCode, GeneralizeTo};
+use error::Error;
 use std::fmt::{self, Display};
 
 
-pub type EngineError = Exception<EngineErrorCode>;
+pub type EngineError = Error<EngineErrorCode>;
 pub type EngineResult<T> = Result<T, EngineError>;
 
-pub type RuntimeError = Exception<RuntimeErrorCode>;
+pub type RuntimeError = Error<RuntimeErrorCode>;
 pub type RuntimeResult<T> = Result<T, RuntimeError>;
 
 impl GeneralizeTo<EngineErrorCode> for RuntimeErrorCode {
@@ -29,22 +28,26 @@ pub enum EngineErrorCode {
     RuntimeError
 }
 
+impl ErrorCode for EngineErrorCode {
+    fn description(&self) -> &str {
+        match *self {
+            EngineErrorCode::TemplateNotFound{..} => "Template not found",
+            EngineErrorCode::RuntimeError => "Runtime error",
+        }
+    }
+}
+
 impl Display for EngineErrorCode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             EngineErrorCode::TemplateNotFound { ref name, ref search_paths } => {
-                if search_paths.len() == 0 {
-                    // note: use {:?} instead of \"{}\" for strings
-                    //      -> easier to write
-                    //      -> escapes quotes within strings
-                    write!(f, "Template {:?} was not found", name)
-                } else {
-                    try!(write!(f, "Template {:?} was not found, looked in ", name));
-                    write!(f, "{:?}", search_paths)
-                }
+                // note: use {:?} instead of \"{}\" for strings
+                //      -> easier to write
+                //      -> escapes quotes within strings
+                write!(f, "Template {:?} not found, looked in {:?}", name, search_paths)
             },
             EngineErrorCode::RuntimeError => {
-                write!(f, "Some Runtime Error")
+                write!(f, "Some runtime error")
             }
         }
     }
@@ -57,7 +60,15 @@ pub enum RuntimeErrorCode {
     InvalidArgumentCount { defined: usize, given: usize },
 }
 
-impl fmt::Display for RuntimeErrorCode {
+impl ErrorCode for RuntimeErrorCode {
+    fn description(&self) -> &str {
+        match *self {
+            RuntimeErrorCode::InvalidArgumentCount{..} => "Invalid Argument Count",
+        }
+    }
+}
+
+impl Display for RuntimeErrorCode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             RuntimeErrorCode::InvalidArgumentCount { ref defined, ref given } => {

@@ -5,8 +5,7 @@
 
 /// Twig base exception
 
-use std::fmt::{self, Debug, Display};
-use std::any::Any;
+use std::fmt::{self, Display};
 use std::convert::Into;
 
 
@@ -14,12 +13,13 @@ use std::convert::Into;
 pub mod macros;
 // use std Error-trait to improve cross-crate compatibility
 // don't mix it up with Err(X)
-pub use std::error::Error;
+pub use std::error::Error as StdError;
 pub mod api;
 
-// however this means, we have to call our objects differently ... I suggest Exception
-pub struct Exception<T>
-    where T: Any + Debug + Display
+// generic wrapper around some StdError - adds location support
+#[derive(Debug)]
+pub struct Error<T>
+    where T: api::ErrorCode
 {
     // the exception codes are going to be enums
     // - i.e. Exception<MY_ENUM> implements std::error::Error without any boilerplate
@@ -28,28 +28,17 @@ pub struct Exception<T>
     // I decided to call this field `code` instead of `error` to not confuse it with the Error trait
     location: Location,
     // chaining is required by std::error::Error
-    cause: Option<Box<Error>>,
-    // description buffer is required by std::error::Error - it is a compilation of code + location
-    //
-    // It's hard to compile this string lazily - even with Option<RefCell<>>, due to the API
-    // of std::error::Error. So we have to precompile this string for now, even if someone
-    // just throws away the Exception. :-/
-    description: String
+    cause: Option<Box<StdError>>,
 }
 
-impl<T> Exception<T>
-    where T: Any + Debug + Display
+impl<T> Error<T>
+    where T: api::ErrorCode
 {
-    pub fn new(code: T, location: Location) -> Exception<T> {
-        let description = format!("{error_code} at {location}",
-            error_code = code,
-            location = location.to_string());
-
-        Exception {
+    pub fn new(code: T, location: Location) -> Error<T> {
+        Error {
             code: code,
             location: location,
-            cause: None,
-            description: description
+            cause: None
         }
     }
 
@@ -62,23 +51,14 @@ impl<T> Exception<T>
         &self.location
     }
 
-    // I would opt to remove(!) this method in favour of more complex enum error-codes
-    // with additional data like you are using right now. Removal would force us to put
-    // all useful information into the enums. But that might turn out to be useful afterwards.
-    // We could gain much information by just Debug-formatting our errors / exceptions.
-    // Good-Bye pre-parsed strings. ;-)
-    pub fn explain(mut self, _message: String) -> Self {
-        unimplemented!()
-    }
-
-    pub fn caused_by<X: 'static + Error>(mut self, cause: X) -> Self {
+    pub fn caused_by<X: 'static + StdError>(mut self, cause: X) -> Self {
         self.cause = Some(Box::new(cause));
 
         self
     }
 
-    pub fn causes<X>(self, wrapper: Exception<X>) -> Exception<X> where
-        X: Any + Debug + Display
+    pub fn causes<X>(self, wrapper: Error<X>) -> Error<X> where
+        X: api::ErrorCode
     {
         wrapper.caused_by(self)
     }
@@ -91,35 +71,35 @@ impl<T> Exception<T>
     }
 }
 
-impl<T> Error for Exception<T>
-    where T: Any + Debug + Display
+impl<T> StdError for Error<T>
+    where T: api::ErrorCode
 {
     fn description(&self) -> &str {
-        &self.description
+        // delegate the error description to the ErrorCode
+        &self.code.description()
     }
 
-    fn cause<'a>(&'a self) -> Option<&'a Error> {
-        self.cause.as_ref().map(|x| &**x) // dereference from Option<Box<T>> to Option<&T>
+    fn cause<'a>(&'a self) -> Option<&'a StdError> {
+        // dereference from Option<Box<T>> to Option<&T>
+        self.cause.as_ref().map(|x| &**x)
     }
 }
 
-// Exception -> Err(Exception)
-impl<T, V> Into<Result<V, Exception<T>>> for Exception<T>
-    where T: Any + Debug + Display
+// Error -> Err(Error)
+impl<T, V> Into<Result<V, Error<T>>> for Error<T>
+    where T: api::ErrorCode
 {
-    fn into (self) -> Result<V, Exception<T>> {
+    fn into (self) -> Result<V, Error<T>> {
         Err(self)
     }
 }
 
-
-
 pub struct ErrorIter<'a> {
-    next: Option<&'a Error>
+    next: Option<&'a StdError>
 }
 
 impl<'a> Iterator for ErrorIter<'a> {
-    type Item = &'a Error;
+    type Item = &'a StdError;
 
     fn next(&mut self) -> Option<Self::Item> {
         return match self.next {
@@ -132,26 +112,18 @@ impl<'a> Iterator for ErrorIter<'a> {
     }
 }
 
-impl<T> Display for Exception<T>
-    where T: Any + Debug + Display
+impl<T> Display for Error<T>
+    where T: api::ErrorCode
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        let recursive_desc = self.iter().map(|e| e.description())
-             .collect::<Vec<&str>>().join(" caused by\n - ");
-        write!(f, "\n - {}\n", recursive_desc)
-    }
-}
+        try!(write!(f, "{error_code} at {location}\n",
+            error_code = self.code,
+            location = self.location));
 
-impl<T> Debug for Exception<T>
-    where T: Any + Debug + Display
-{
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        // custom implementation - skipping description, which would be somewhat redundant
-        f.debug_struct("Exception<T>")
-            .field("location", &self.location)
-            .field("code", &self.code)
-            .field("cause", &self.cause)
-            .finish()
+        match self.cause {
+            None => Ok(()),
+            Some(ref cause) => write!(f, " - caused by: {}", cause),
+        }
     }
 }
 
@@ -167,9 +139,9 @@ pub struct Location {
     pub column : u32,
 }
 
-impl ToString for Location {
-    fn to_string(&self) -> String {
-        format!("{filename}:{line}:{column}",
+impl Display for Location {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(f, "{filename}:{line}:{column}",
             filename = self.filename,
             line     = self.line,
             column   = self.column)

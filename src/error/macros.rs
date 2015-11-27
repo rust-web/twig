@@ -11,12 +11,12 @@ pub use super::*;
 #[macro_export]
 macro_rules! err {
     ( $code:expr ) => ({
-        ::error::Exception::new($code, err_location!())
+        ::error::Error::new($code, location!())
     });
 }
 
 #[macro_export]
-macro_rules! err_location {
+macro_rules! location {
     () => ({
         ::error::Location {
             module_path : module_path!(),
@@ -38,7 +38,7 @@ macro_rules! err_location {
 // }
 macro_rules! try_chain {
     ( $result:expr ) => (
-        match($result) {
+        match $result {
             Ok(value) => value,
             Err(cause) => {
                 return err!(::error::api::GeneralizeTo::generalize(cause.code()))

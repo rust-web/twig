@@ -7,6 +7,8 @@
 
 #[macro_use]
 pub mod error;
+
+#[cfg(test)]
 mod test_error;
 
 #[test]
