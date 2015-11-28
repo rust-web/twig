@@ -36,7 +36,7 @@ fn test() {
     // -> just for demonstration right now:
 
     let my_error = EngineErrorCode::RuntimeError
-        .at(location!())
+        .at(loc!())
         .caused_by(foo_runtime_error().unwrap_err());
 
     assert_eq!(my_error.to_string(),

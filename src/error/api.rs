@@ -34,3 +34,11 @@ pub trait ErrorCode: Debug + Display + Any {
 pub trait GeneralizeTo<T> {
     fn generalize(&self) -> T;
 }
+
+// implement this trait for complex objects like lexer/parser Jobs
+// to be able to embedd their most important data in ErrorCodes via `X::dump()`
+pub trait Dump {
+    type Data: Debug + Display;
+
+    fn dump(&self) -> Self::Data;
+}
