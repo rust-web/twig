@@ -5,8 +5,7 @@
 
 /// Twig library for rust
 
-use error::api::{ErrorCode, GeneralizeTo};
-use error::Error;
+use error::{Error, ErrorCode, GeneralizeTo};
 use std::fmt::{self, Display};
 
 

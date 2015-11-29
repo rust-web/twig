@@ -7,7 +7,7 @@
 
 mod error_codes;
 use self::error_codes::{EngineResult, EngineErrorCode, RuntimeResult, RuntimeErrorCode, MockCursor};
-use error::api::ErrorCode;
+use error::ErrorCode;
 
 fn foo_engine_error() -> EngineResult<()> {
     err!(EngineErrorCode::TemplateNotFound {
