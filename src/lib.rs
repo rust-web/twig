@@ -5,16 +5,17 @@
 
 //! # Twig Templating for Rust
 //!
-//! This library is derived from [Twig (for PHP)][twigphp] and intended to become a _fully compatible_ port - as far as it makes sense. By design Twig is
-//!
-//! * flexible
-//! * fast
-//! * and secure
-//!
-//! Twig Rust will be a template engine for everyone writing web applications with Rust.
-//!
-//! > **work in progress** - This library is still in development and not yet ready for use.
+//! **Work in progress** - This library is still in development and not yet ready for use.
 //! Take a look at the [CHANGELOG][changelog] for more details.
+//!
+//! [Twig Rust][github] is a template engine for everyone writing web applications with Rust.
+//! It is derived from [Twig (for PHP)][twigphp] and intended to become a _fully compatible_ port - as far as it makes sense.
+//! 
+//! By design Twig is
+//!
+//!   * flexible
+//!   * fast
+//!   * and secure
 //!
 //! ## Syntax and Semantics
 //!
