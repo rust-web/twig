@@ -16,26 +16,11 @@
 /// ```rust,macro_test
 /// # #[macro_use] extern crate twig;
 /// # fn main() {
-/// use std::fmt;
-/// use twig::error::{Error, ErrorCode};
+/// use twig::error::Error;
 ///
-/// #[derive(Debug)]
-/// struct MyErrorCode;
-/// type MyError = Error<MyErrorCode>;
-///
-/// impl ErrorCode for MyErrorCode {
-///     fn description(&self) -> &str { "critical error" }
-/// }
-///
-/// impl fmt::Display for MyErrorCode {
-///     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-///         write!(f, "{} with human readable details", self.description())
-///     }
-/// }
-///
-/// let result: Result<(), MyError> = err!(MyErrorCode);
+/// let result: Result<(), Error<&'static str>> = err!("critical error");
 /// if let Err(error) = result {
-///     assert_eq!(error.to_string(), "critical error with human readable details at <anon>:20:34\n");
+///     assert_eq!(error.to_string(), "critical error at <anon>:5:46\n");
 /// }
 /// # }
 /// ```

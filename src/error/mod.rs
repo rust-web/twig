@@ -4,6 +4,45 @@
 // file that was distributed with this source code.
 
 //! Twig Error Handling
+//!
+//! # Examples
+//!
+//! ```rust,macro_test
+//! # #[macro_use] extern crate twig;
+//! # fn main() {
+//! use std::fmt;
+//! use twig::error::{Error, ErrorCode};
+//!
+//! // Implement a custom error code.
+//! #[derive(Debug)]
+//! enum MySimpleErrorCode {
+//!     Critical,
+//!     Recoverable
+//! }
+//! type MySimpleError = Error<MySimpleErrorCode>;
+//!
+//! impl ErrorCode for MySimpleErrorCode {
+//!     fn description(&self) -> &str {
+//!         match *self {
+//!             MySimpleErrorCode::Critical => "Critical error.",
+//!             MySimpleErrorCode::Recoverable => "Recoverable error."
+//!         }
+//!     }
+//! }
+//!
+//! impl fmt::Display for MySimpleErrorCode {
+//!     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//!         write!(f, "{} With human readable details", self.description())
+//!     }
+//! }
+//!
+//! // Create a twig error, wrapping this error code + code location.
+//! let result: Result<(), MySimpleError> = err!(MySimpleErrorCode::Critical);
+//! if let Err(error) = result {
+//!     assert_eq!(error.to_string(), "Critical error. With human readable details at <anon>:30:40\n");
+//! }
+//! # }
+//! ```
 
 use std::fmt::{self, Debug, Display};
 use std::error;
@@ -91,7 +130,7 @@ impl<T> Error<T>
     /// # #[macro_use] extern crate twig;
     /// # fn main() {
     /// use twig::error::Error;
-    /// 
+    ///
     /// Error::new("my error", loc!()); // shorthand: `err!("my error")`
     /// # }
     /// ```
