@@ -3,12 +3,16 @@
 
 # Twig-Rust
 
-a **template engine** for everyone writing web applications with Rust. By design Twig is
+A **template engine** for everyone writing web applications with Rust. By design Twig is
 * flexible
 * fast
 * and secure
 
-This library is derived from [Twig (for PHP)](http://twig.sensiolabs.org/documentation) and intended to become a _fully compatible_ port - as far as it makes sense.
+This library is derived from [Twig (for PHP)][twigphp] and intended to become a _fully compatible_ port - as far as it makes sense.
+
+## Documentation
+
+The library code is documented [here][documentation].
 
 ## Current Status
 
@@ -17,3 +21,6 @@ This is an effort to merge two alpha-grade implementations and to proceed from t
 * https://github.com/colin-kiegel/twig-rust
 
 see issues and pull-requests for more information about next steps
+
+[twigphp]: http://twig.sensiolabs.org/documentation
+[documentation]: http://rust-web.github.io/twig
