@@ -14,12 +14,13 @@
 //! use twig::error::{Error, ErrorCode};
 //!
 //! // Implement a custom error code.
+//! type MySimpleError = Error<MySimpleErrorCode>;
+//!
 //! #[derive(Debug)]
 //! enum MySimpleErrorCode {
 //!     Critical,
 //!     Recoverable
 //! }
-//! type MySimpleError = Error<MySimpleErrorCode>;
 //!
 //! impl ErrorCode for MySimpleErrorCode {
 //!     fn description(&self) -> &str {
@@ -39,7 +40,7 @@
 //! // Create a twig error, wrapping this error code + code location.
 //! let result: Result<(), MySimpleError> = err!(MySimpleErrorCode::Critical);
 //! if let Err(error) = result {
-//!     assert_eq!(error.to_string(), "Critical error. With human readable details at <anon>:30:40\n");
+//!     assert_eq!(error.to_string(), "Critical error. With human readable details at <anon>:31:40\n");
 //! }
 //! # }
 //! ```
