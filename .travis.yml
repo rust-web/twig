@@ -9,7 +9,7 @@ env:
   - PKGNAME=twig
   - LOCAL="~/.local"
   # encrypted github token for doc+coveralls upload
-  - secure: "XMup9KTWOdH5F5u1Nd3euFiNLXWWUpipMTrVF64X9GQ/mWdNOxiLdbRzsuUbeGn2KN+a0bY8Q7Nee4ERhVpSt65roT3mLrfx+DXBtF+A85qYy5Ac5MdJSV3yVF+CIoaxRWn7LLaF92/VpJ8W3e6vd5tfuQ6q+NUs5CrUTizWJhVjdH0QAiyho8Z+PNik52euPsDOMuoiSK63dwR6mPY6joh1OEruJYyettKjP4o33ELnySpyQ/xgxtCH6+AHfsPeSPmR1yLCbPTkUy5lhHATAyUbacmft9RECZf0QofPE0P9vvNYd/zPfIOHIwAh0ZYrrTNpHf8sz74mhMAL3z1oZMBGK3jZkeefZ5uqTaJDdA2egNSCFwhb/yUjQEEVYLWNddBqvtuPVrKodxS1irD5ZjQRhOmWPGb0OptdkHPcPzsNR5f4ca8ontyZFi5jUKF/eVwvVVqAvJ26bRxkhvje2+fkXFY4bk/bigqC8aR47LNfL+okw7JkqIPAsxQHkW0VGKX7kL2AYvxHWmRYaUQMsavxSbWGyzqsUzcHlBxCtHkL04dufdJsNFy5V73HVPmQk6bpCVTBaKz3IB7CrptXyKQaRtdTkN6HD0V5L9e8UqYAbB5NEdO231OaQpC1nIgB1fPGecXpHzjksN9NtL16fsKUT6DuKvsAQ86Q+8fyHfs="
+  - secure: "Pg4GNkTJsTB1AuI/KBQt8P6FF+HK1dgmwu2XHa/uhiBthDCAi82w3ZBzElWFdPM/HTWrW7q+7YZbB+zgY9LBs/DVb3HYa+j/hlIb9PmazEcZdrj4QDHcaA+Jak3cGhVejUu9zDyEYpPcFtCFeP/K63GyKED+LKWiRdFOioieX6d0rqi93pE+/0Dk1z8Sqq4G5G5Eu5L08DGU+FJrHYSG9N8/TgBMhkdhaRGKyWbShqzJQYv3krt4KF0xLS41kTkCdIsqeVD6owAWhpHKjUpzsn/gjXjH5pbX1f4dGEfd5cSXqAleE9CHRw/HYEsl+Q9Dk8XhkMu8VnsbkZCleReDl/a1/7NHGgn1iZfQhu5NhTcMe0PpNcPA9LWBsWKjbEca1xRMbJt8qQUjPf6smxV9LDxuPF7w8S8HhKoJv3gHE5s0cIf3oAxMSa1GUgw7klBPTTRhbrJTi2O3jEdgt5IatK3YW/a7njB95uafjtyeQCxxWrZ4D2R0UNhSkyp8cEM8KSEfI8AGIctYADmvbmKGIp0ksr8aN2GWWNPw3XruFpU8D8jDGvuRRyG1FTlhogfrBTs7fR6rq3Ui4vkRKCmrJpde1B/QKBw+rslJuMXPMHs9v8spKqEL0xpF0JqpbtGuAZvomyy2gXLQnAJ6mqhnzxP1ZXNDfj4FccoWowUDSpM="
 addons:
   apt:
     packages:
@@ -31,9 +31,9 @@ script: |
 after_success: |
   # upload the documentation from the build with stable (automatically only actually
   # runs on the master branch, not individual PRs)
-  travis-cargo --only stable doc-upload
+  travis-cargo --only stable doc-upload 2> /dev/null # anti-credential leakage
 
   # measure code coverage and upload to coveralls.io (the verify
   # argument mitigates kcov crashes due to malformed debuginfo, at the
   # cost of some speed <https://github.com/huonw/travis-cargo/issues/12>)
-  travis-cargo coveralls --no-sudo --verify
+  travis-cargo coveralls --no-sudo --verify 2> /dev/null # anti-credential leakage
