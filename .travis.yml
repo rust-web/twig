@@ -6,14 +6,11 @@ rust:
 env:
   global:
   - RUST_BACKTRACE=1
-  - PKGNAME=twig
-  - LOCAL="~/.local"
   # encrypted github token for doc+coveralls upload
-  - secure: "Pg4GNkTJsTB1AuI/KBQt8P6FF+HK1dgmwu2XHa/uhiBthDCAi82w3ZBzElWFdPM/HTWrW7q+7YZbB+zgY9LBs/DVb3HYa+j/hlIb9PmazEcZdrj4QDHcaA+Jak3cGhVejUu9zDyEYpPcFtCFeP/K63GyKED+LKWiRdFOioieX6d0rqi93pE+/0Dk1z8Sqq4G5G5Eu5L08DGU+FJrHYSG9N8/TgBMhkdhaRGKyWbShqzJQYv3krt4KF0xLS41kTkCdIsqeVD6owAWhpHKjUpzsn/gjXjH5pbX1f4dGEfd5cSXqAleE9CHRw/HYEsl+Q9Dk8XhkMu8VnsbkZCleReDl/a1/7NHGgn1iZfQhu5NhTcMe0PpNcPA9LWBsWKjbEca1xRMbJt8qQUjPf6smxV9LDxuPF7w8S8HhKoJv3gHE5s0cIf3oAxMSa1GUgw7klBPTTRhbrJTi2O3jEdgt5IatK3YW/a7njB95uafjtyeQCxxWrZ4D2R0UNhSkyp8cEM8KSEfI8AGIctYADmvbmKGIp0ksr8aN2GWWNPw3XruFpU8D8jDGvuRRyG1FTlhogfrBTs7fR6rq3Ui4vkRKCmrJpde1B/QKBw+rslJuMXPMHs9v8spKqEL0xpF0JqpbtGuAZvomyy2gXLQnAJ6mqhnzxP1ZXNDfj4FccoWowUDSpM="
+  - secure: "K6yfXslYKoELg7DgLleLOdfEjOmblLZlxUQXtHD4Vx6PKR+hFm3t+XS8KxjXDrPf/Hop/GYgh5S67GSmjvgtu3dMD+M6moaFocRP5MAxc5jM1tCY5TRdRYDbCAMuN4kj8kzOHTbctMHpM0FMSnvdPkcCXfuMIOuO3Vt3J4f5llE8FQI54h+8qoYeE3SZnVQ4a6IXHPS6tLBpowdQB3D8pf44g5nNpHDd7kkOs3VlE0lPX1ENQXp6WGPmFpWPXwfY9xOebZDkJ0EZxGLUC9JF81mwPKxEQ+t7EecXx2saNQgggSxyc5lLVX628kj3Fnlkn/jw5pxIuWPRuQ3v8/CFXV+wD5LVVfpv15DluMz3zxw8MRLC7OmMrsnW+ws16Kj7gaRJ966Q1QJX286Lq1IN0MG5e+BqLeibCEVPVCFeaxH0u47ULFSTsNRu0ognaS60smnvkM2iKMNndaob/4fMo+p5bKFEyKre0N52IqiM18IlWzmtfupoK8nRIP46RI34ghRP9NBVJRQtHD+4pE8MAcSJqZAkFjur3sfRkLy1oY0QyZzTb7b1D25REvjKDXJcDmBwmeSoJ+i4F0cTGUhg8DNZATtQ1FTZWtwSCFyNjYnW4jK/Q4i0aStblIlh9BLLXncJX5aVKDrMb+nSGrvmn8g34HLl5xOEWsfVB4IkuUQ="
 addons:
   apt:
     packages:
-    # travis-cargo dependencies
     - libcurl4-openssl-dev
     - libelf-dev
     - libdw-dev
