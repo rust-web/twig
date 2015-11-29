@@ -90,6 +90,8 @@ impl<T> Error<T>
     /// ```
     /// # #[macro_use] extern crate twig;
     /// # fn main() {
+    /// use twig::error::Error;
+    /// 
     /// Error::new("my error", loc!()); // shorthand: `err!("my error")`
     /// # }
     /// ```
