@@ -1,0 +1,39 @@
+sudo: false
+language: rust
+rust:
+- stable
+- beta
+env:
+  global:
+  - RUST_BACKTRACE=1
+  - PKGNAME=twig
+  - LOCAL="~/.local"
+  # encrypted github token for doc+coveralls upload
+  - secure: "XMup9KTWOdH5F5u1Nd3euFiNLXWWUpipMTrVF64X9GQ/mWdNOxiLdbRzsuUbeGn2KN+a0bY8Q7Nee4ERhVpSt65roT3mLrfx+DXBtF+A85qYy5Ac5MdJSV3yVF+CIoaxRWn7LLaF92/VpJ8W3e6vd5tfuQ6q+NUs5CrUTizWJhVjdH0QAiyho8Z+PNik52euPsDOMuoiSK63dwR6mPY6joh1OEruJYyettKjP4o33ELnySpyQ/xgxtCH6+AHfsPeSPmR1yLCbPTkUy5lhHATAyUbacmft9RECZf0QofPE0P9vvNYd/zPfIOHIwAh0ZYrrTNpHf8sz74mhMAL3z1oZMBGK3jZkeefZ5uqTaJDdA2egNSCFwhb/yUjQEEVYLWNddBqvtuPVrKodxS1irD5ZjQRhOmWPGb0OptdkHPcPzsNR5f4ca8ontyZFi5jUKF/eVwvVVqAvJ26bRxkhvje2+fkXFY4bk/bigqC8aR47LNfL+okw7JkqIPAsxQHkW0VGKX7kL2AYvxHWmRYaUQMsavxSbWGyzqsUzcHlBxCtHkL04dufdJsNFy5V73HVPmQk6bpCVTBaKz3IB7CrptXyKQaRtdTkN6HD0V5L9e8UqYAbB5NEdO231OaQpC1nIgB1fPGecXpHzjksN9NtL16fsKUT6DuKvsAQ86Q+8fyHfs="
+addons:
+  apt:
+    packages:
+    # travis-cargo dependencies
+    - libcurl4-openssl-dev
+    - libelf-dev
+    - libdw-dev
+    - binutils-dev
+before_script: |
+  # load travis cargo
+  # - https://github.com/huonw/travis-cargo
+  pip install 'travis-cargo<0.2' --user &&
+  export PATH=$LOCAL/bin:$PATH
+script: |
+  travis-cargo build &&
+  travis-cargo test &&
+  travis-cargo bench &&
+  travis-cargo doc
+after_success: |
+  # upload the documentation from the build with stable (automatically only actually
+  # runs on the master branch, not individual PRs)
+  travis-cargo --only stable doc-upload
+
+  # measure code coverage and upload to coveralls.io (the verify
+  # argument mitigates kcov crashes due to malformed debuginfo, at the
+  # cost of some speed <https://github.com/huonw/travis-cargo/issues/12>)
+  travis-cargo coveralls --no-sudo --verify

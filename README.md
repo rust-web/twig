@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/rust-web/twig.svg)](https://travis-ci.org/rust-web/twig)
+[![Coverage Status](https://coveralls.io/repos/rust-web/twig/badge.svg?branch=master&service=github)](https://coveralls.io/github/rust-web/twig?branch=master)
+
 # Twig-Rust
 
 a **template engine** for everyone writing web applications with Rust. By design Twig is
