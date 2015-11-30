@@ -5,6 +5,8 @@
 
 //! Twig Error Handling
 //!
+//! **Note**: Macros must be imported *explicitly* via `#[macro_use] extern crate twig;`
+//!
 //! # Examples
 //!
 //! ```rust,macro_test
@@ -89,14 +91,15 @@ pub trait GeneralizeTo<T> {
 
 /// Record current state of complex objects
 ///
-/// Implement this trait for complex objects. Make sure, that the Dump::Data type
-/// does not contain lifetimes to keep error codes simple. In practice this means
-/// cloning all referenced data into the dump.
+/// The purpose of a dump is to be wrapped in error codes instead of complex objects.
+/// This abstraction allows to
+/// * keep error codes free of any lifetimes
+/// * maintain the ability of receiver of error codes to decide about verbosity
 ///
-/// For any `X: Dump` you can
+/// The Dump::Data type may not contain lifetimes.
+/// In practice this means cloning all referenced data into the dump.
 ///
-/// * reference the associated type via `<X as Dump>::Data`
-/// * create the dump via `X.dump()`
+/// For a type `X: Dump` you can reference the associated dump type via `<X as Dump>::Data`.
 pub trait Dump {
     type Data: Debug + Display + 'static;
 
