@@ -10,7 +10,7 @@
 //!
 //! [Twig Rust][github] is a template engine for everyone writing web applications with Rust.
 //! It is derived from [Twig (for PHP)][twigphp] and intended to become a _fully compatible_ port - as far as it makes sense.
-//! 
+//!
 //! By design Twig is
 //!
 //!   * flexible
@@ -61,10 +61,3 @@
 
 #[macro_use]
 pub mod error;
-
-#[cfg(test)]
-mod test_error;
-
-#[test]
-fn it_works() {
-}
