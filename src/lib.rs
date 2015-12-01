@@ -1,4 +1,4 @@
-// This file is part of Twig (ported to Rust).
+// This file is part of rust-web/twig
 //
 // For the copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
@@ -10,12 +10,21 @@
 //!
 //! [Twig Rust][github] is a template engine for everyone writing web applications with Rust.
 //! It is derived from [Twig (for PHP)][twigphp] and intended to become a _fully compatible_ port - as far as it makes sense.
-//! 
+//!
 //! By design Twig is
 //!
 //!   * flexible
 //!   * fast
 //!   * and secure
+//!
+//! ## Getting Started
+//!
+//! ```
+//! use twig::{Engine, Setup};
+//!
+//! let twig = Engine::new(Setup::default()).unwrap();
+//! // ..
+//! ```
 //!
 //! ## Syntax and Semantics
 //!
@@ -59,8 +68,16 @@
 //! [changelog]: https://github.com/rust-web/twig/blob/master/CHANGELOG.md
 //! [twigphp]: http://twig.sensiolabs.org/documentation
 
-#[macro_use]
-pub mod error;
+extern crate regex;
+
+#[macro_use] pub mod error; // should be first :-)
+pub mod engine;
+pub mod extension;
+pub mod loader;
+pub mod template;
+
+pub use engine::Engine;
+pub use engine::Setup;
 
 #[cfg(test)]
 mod test_error;

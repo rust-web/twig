@@ -2,7 +2,7 @@
 name = "twig"
 version = "0.1.0"
 description = "Twig templating engine for Rust; work in progress."
-documentation = ""
+documentation = "https://rust-web.github.io/twig"
 repository = "https://github.com/rust-web/twig"
 authors = [
     "Rust Twig Team",
@@ -10,3 +10,9 @@ authors = [
     "Colin Kiegel <kiegel@gmx.de>"
 ]
 license = "BSD-3-Clause"
+keywords = ["twig", "template", "templating", "engine", "web", "application",
+  "html", "language"]
+readme = "README.md"
+
+[dependencies]
+regex = "0.1"
