@@ -20,9 +20,10 @@
 //! ## Getting Started
 //!
 //! ```
-//! use twig::{Engine, Setup};
+//! use twig::{Setup, Engine};
 //!
-//! let twig = Engine::new(Setup::default()).unwrap();
+//! let setup = Setup::default();
+//! let twig = setup.engine().unwrap();
 //! // ..
 //! ```
 //!
@@ -74,7 +75,8 @@ extern crate regex;
 pub mod engine;
 pub mod extension;
 pub mod loader;
+pub mod setup;
 pub mod template;
 
 pub use engine::Engine;
-pub use engine::Setup;
+pub use setup::Setup;

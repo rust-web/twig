@@ -7,7 +7,7 @@
 
 use extension::api::{self, Extension};
 use std::collections::HashMap;
-use engine::Engine;
+use engine::Options;
 use engine::error::{ExtensionRegistryError, ExtensionRegistryErrorCode};
 
 pub type Iter<'a> = ::std::collections::hash_map::Values<'a, String, Box<Extension>>;
@@ -74,13 +74,13 @@ impl ExtensionRegistry {
     }
 
     /// Initialize extensions with the engine
-    pub fn init(&mut self, engine: &mut Engine) -> Result<(), ExtensionRegistryError> {
+    pub fn init(&mut self, options: &Options) -> Result<(), ExtensionRegistryError> {
         if self.initialized {
             return err!(ExtensionRegistryErrorCode::AlreadyInitialized)
         }
 
-        for (_, ext) in self.ext.iter() {
-            ext.init(engine);
+        for (_, ext) in self.ext.iter_mut() {
+            ext.init(options);
 
             for (k, v) in ext.filters() {
                 if let Some(prev) = self.filters.insert(k, v) {

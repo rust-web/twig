@@ -10,10 +10,10 @@ use loader::Loader;
 use std::rc::Rc;
 use template;
 use error::ErrorCode;
+use setup::Setup;
 
 pub mod error;
 pub mod options;
-pub mod setup;
 pub mod extension_registry;
 pub mod parser;
 pub mod node;
@@ -21,14 +21,13 @@ pub use self::node::Node;
 pub use self::parser::{Parser, lexer, Lexer};
 pub use self::error::{TwigError, TwigErrorCode, ExtensionRegistryError, ExtensionRegistryErrorCode};
 pub use self::options::Options;
-pub use self::setup::Setup;
 pub use self::extension_registry::ExtensionRegistry;
 
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct Engine {
     options: Options,
-    ext: Option<Rc<ExtensionRegistry>>,
+    ext: Rc<ExtensionRegistry>,
     loader: Option<Box<Loader>>,
     lexer: Option<Lexer>,
     parser: Option<Parser>,
@@ -38,15 +37,31 @@ pub struct Engine {
 impl Engine {
     /// Create a new Twig `Engine`.
     ///
+    /// Note: You may want to
+    ///
     /// # Examples
     ///
     /// ```
-    /// use twig::{Engine, Setup};
+    /// use twig::engine::{Engine, Options, ExtensionRegistry};
     ///
-    /// let twig = Engine::new(Setup::default()).unwrap();
+    /// let twig = Engine::new(Options::default(), ExtensionRegistry::default());
     /// ```
-    pub fn new(setup: setup::Setup) -> Result<Self, TwigError> {
-        setup.engine()
+    ///
+    /// # Altnernative
+    ///
+    /// ```
+    /// use twig::Setup;
+    ///
+    /// let twig = Setup::default().engine().unwrap();
+    /// ```
+    pub fn new(options: Options, ext: ExtensionRegistry) -> Self {
+        Engine {
+            options: options,
+            ext: Rc::new(ext),
+            loader: None,
+            lexer: None,
+            parser: None,
+        }
     }
 
     /// Renders a template.
@@ -112,21 +127,9 @@ impl Engine {
         Ok(compiled)
     }
 
-    /// Sets the engine extensions.
-    pub fn set_extensions(&mut self, ext: ExtensionRegistry) -> &mut Engine {
-        self.ext = Some(Rc::new(ext)); // TODO: switch to callback pattern to provide arguments
-
-        self
-    }
-
-    /// Gets the engine extensions.
-    pub fn extensions(&self) -> Result<&Rc<ExtensionRegistry>, TwigError> {
-        match self.ext {
-            Some(ref ext) => Ok(ext),
-            None => {
-                try_chain!(err!(ExtensionRegistryErrorCode::NotInitialized))
-            }
-        }
+    /// Get the engine extensions.
+    pub fn extensions(&self) -> &ExtensionRegistry {
+        &self.ext
     }
 
     /// Sets the loader instance.
@@ -136,7 +139,7 @@ impl Engine {
         self
     }
 
-    /// Gets the loader instance.
+    /// Get the loader instance.
     pub fn loader(&mut self) -> Result<&mut Loader, TwigError> {
         match self.loader {
             Some(ref mut loader) => return Ok(&mut **loader),
@@ -146,14 +149,7 @@ impl Engine {
         }
     }
 
-    /// Sets the lexer instance.
-    pub fn set_lexer(&mut self, lexer: Lexer) -> &mut Engine {
-        self.lexer = Some(lexer);
-
-        self
-    }
-
-    /// Gets the lexer instance.
+    /// Get the lexer instance.
     pub fn lexer(&mut self) -> Result<&Lexer, TwigError> {
         match self.lexer {
             Some(ref lexer) => return Ok(lexer),
@@ -164,14 +160,7 @@ impl Engine {
         }
     }
 
-    /// Sets the parser instance.
-    pub fn set_parser(&mut self, parser: Parser) -> &mut Engine {
-        self.parser = Some(parser);
-
-        self
-    }
-
-    /// Gets the parser instance.
+    /// Get the parser instance.
     pub fn parser(&mut self) -> Result<&Parser, TwigError> {
         match self.parser {
             Some(ref parser) => return Ok(parser),
@@ -185,5 +174,12 @@ impl Engine {
                 return self.parser();
             }
         }
+    }
+}
+
+// NOTE: `derive(Default)` would not initialize any extensions
+impl Default for Engine {
+    fn default() -> Engine {
+        Setup::default().engine().unwrap()
     }
 }

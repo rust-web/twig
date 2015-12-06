@@ -6,10 +6,9 @@
 //! Stores the Twig configuration.
 
 use std::path::Path;
-use std::rc::Rc;
 use extension;
 use extension::api::Extension;
-use engine::{Engine, options, Options, extension_registry, ExtensionRegistry};
+use engine::{Engine, options, Options, ExtensionRegistry};
 use engine::error::{TwigError};
 
 #[allow(dead_code)]
@@ -18,11 +17,12 @@ pub const VERSION : &'static str = "1.18.1";
 #[derive(Debug)]
 pub struct Setup {
     opt: Options,
-    ext: ExtensionRegistry,
+    ext: ExtensionRegistry
 }
 
 impl Default for Setup {
     fn default() -> Setup {
+        // prepend default extensions
         let mut ext = ExtensionRegistry::default();
         ext.push(extension::Core::new()).unwrap();
 
@@ -49,7 +49,7 @@ impl Default for Setup {
 /// let mut setup = Setup::default()
 ///     .set_strict_variables(true)
 ///     .add_extension(Debug::new()).unwrap();
-/// let engine = Engine::new(setup).unwrap();
+/// let twig = setup.engine().unwrap();
 /// ```
 #[allow(dead_code)]
 impl Setup {
@@ -62,25 +62,21 @@ impl Setup {
     ///
     /// let twig = Setup::default().engine().unwrap();
     /// ```
-    pub fn engine(mut self) -> Result<Engine, TwigError> {
-        let mut c = Engine::default();
-        let o = self.opt;
+    pub fn engine(self) -> Result<Engine, TwigError> {
+        let Setup { opt, mut ext } = self;
 
-        // add default extensions
-        try_chain!(self.ext.push(extension::Escaper::new(o.autoescape)));
-        try_chain!(self.ext.push(extension::Optimizer::new(o.optimizations)));
+        // append default extensions
+        try_chain!(ext.push(extension::Escaper::new(opt.autoescape)));
+        try_chain!(ext.push(extension::Optimizer::new(opt.optimizations)));
 
         // init extensions
-        try_chain!(self.ext.init(&mut c));
-        c.ext = Some(Rc::new(self.ext));
+        try_chain!(ext.init(&opt));
 
         // TODO: register staging extension (!)
         //// init staging extension
         // let staging = ext::Staging::new();
-        // try!(c.init_extension(&*staging));
-        // c.ext_staging = Some(staging);
 
-        return Ok(c);
+        Ok(Engine::new(opt, ext))
     }
 
     /// Registers an extension
@@ -154,7 +150,7 @@ impl Setup {
     }
 
     /// Get all registered extensions
-    pub fn extensions(&self) -> extension_registry::Iter {
-        self.ext.iter()
+    pub fn extensions(&self) -> &ExtensionRegistry {
+        &self.ext
     }
 }

@@ -18,7 +18,7 @@ pub trait Extension : fmt::Debug {
 
     /// Initialize the engine.
     /// This is where you can load some file that contains filter functions for instance.
-    fn init(&self, _engine: &mut engine::Engine) {} // TODO: add error handling ???
+    fn init(&mut self, _options: &engine::Options) {} // TODO: add error handling ???
 
     /// Get the token parser instances to register with the engine.
     fn token_parsers(&self) -> HashMap<String, Box<TokenParser>> {
