@@ -78,10 +78,3 @@ pub mod template;
 
 pub use engine::Engine;
 pub use engine::Setup;
-
-#[cfg(test)]
-mod test_error;
-
-#[test]
-fn it_works() {
-}
