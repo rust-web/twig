@@ -1,5 +1,6 @@
 use std::io;
 use api::error::SyntaxError;
+use std::result;
 
 #[derive(Debug)]
 pub enum LexingError {
@@ -18,3 +19,5 @@ impl From<SyntaxError> for LexingError {
         LexingError::Syntax(other)
     }
 }
+
+pub type LexingResult<T> = result::Result<T, LexingError>;
