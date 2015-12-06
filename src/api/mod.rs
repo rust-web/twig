@@ -9,9 +9,10 @@ Twig extension writer's API.
 
 pub mod tokens;
 pub mod lexer;
+pub mod error;
 
 /// Line-column position in a file.
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Position {
     pub line: usize,
     pub column: usize,
