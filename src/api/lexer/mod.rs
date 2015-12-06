@@ -27,8 +27,10 @@ TODO: Example code for this.
 */
 
 mod lexing;
+mod error;
 
 pub use self::lexing::{ Tokens, ItemRef };
+pub use self::error::{ LexingError, LexingResult };
 
 #[derive(Copy, Clone)]
 pub struct Options;

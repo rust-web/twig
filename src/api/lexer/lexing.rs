@@ -6,8 +6,8 @@
 use api::Position;
 use api::tokens::TokenRef;
 
-use api::lexer::Lexer;
-use api::error::{ SyntaxErrorCode, UnexpectedToken, LexingResult };
+use api::lexer::{ Lexer, LexingResult };
+use api::error::{ SyntaxErrorCode, UnexpectedToken };
 
 /// TokenRef wrapper for `Lexer` that additionaly has position.
 #[derive(Debug)]
