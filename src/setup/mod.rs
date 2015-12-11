@@ -91,13 +91,6 @@ impl Setup {
         self
     }
 
-    /// The charset used by the templates (default to UTF-8)
-    pub fn set_charset(mut self, set_charset: options::Charset) -> Self {
-        self.opt.charset = set_charset;
-
-        self
-    }
-
     /// Whether to ignore invalid variables in templates
     ///     (default to false).
     pub fn set_strict_variables(mut self, strict_variables: bool) -> Self {

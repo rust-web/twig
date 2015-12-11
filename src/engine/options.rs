@@ -12,21 +12,10 @@ use extension::optimizer;
 pub type Autoescape = escaper::Mode;
 pub type Optimizations = optimizer::Mode;
 
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum Charset {
-    UTF8
-}
-
-impl Default for Charset {
-    fn default() -> Charset {
-        Charset::UTF8
-    }
-}
 
 #[derive(Debug)]
 pub struct Options {
     pub debug: bool,
-    pub charset: Charset,
     pub strict_variables: bool,
     pub autoescape: Autoescape,
     pub cache: Option<PathBuf>,
@@ -38,7 +27,6 @@ impl Default for Options {
     fn default() -> Options {
         Options {
             debug: false,
-            charset: Charset::default(),
             strict_variables: false,
             autoescape: escaper::Mode::default(),
             cache: None,
@@ -51,10 +39,6 @@ impl Default for Options {
 impl Options {
     pub fn debug(&self) -> bool {
         self.debug
-    }
-
-    pub fn charset(&self) -> Charset {
-        self.charset
     }
 
     pub fn strict_variables(&self) -> bool {
