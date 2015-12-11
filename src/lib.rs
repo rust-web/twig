@@ -23,7 +23,7 @@
 //! use twig::{Setup, Engine};
 //!
 //! let setup = Setup::default();
-//! let twig = setup.engine().unwrap();
+//! let twig = setup.init_engine().unwrap();
 //! // ..
 //! ```
 //!

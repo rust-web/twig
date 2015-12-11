@@ -41,7 +41,7 @@ impl Engine {
     /// ```
     /// use twig::engine::{Engine, Options, ExtensionRegistry};
     ///
-    /// let twig = Engine::new(Options::default(), ExtensionRegistry::default());
+    /// let twig = Engine::new(ExtensionRegistry::default(), Options::default());
     /// ```
     ///
     /// # Altnernative
@@ -49,9 +49,9 @@ impl Engine {
     /// ```
     /// use twig::Setup;
     ///
-    /// let twig = Setup::default().engine().unwrap();
+    /// let twig = Setup::default().init_engine().unwrap();
     /// ```
-    pub fn new(options: Options, ext: ExtensionRegistry) -> Self {
+    pub fn new(ext: ExtensionRegistry, options: Options) -> Self {
         Engine {
             options: options,
             ext: Rc::new(ext),
@@ -177,6 +177,6 @@ impl Engine {
 // NOTE: `derive(Default)` would not initialize any extensions
 impl Default for Engine {
     fn default() -> Engine {
-        Setup::default().engine().unwrap()
+        Setup::default().init_engine().unwrap()
     }
 }

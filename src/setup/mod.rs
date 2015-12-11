@@ -7,7 +7,7 @@
 
 use std::path::Path;
 use extension;
-use extension::api::Extension;
+use api::Extension;
 use engine::{Engine, options, Options, ExtensionRegistry};
 use engine::error::{TwigError};
 
@@ -17,14 +17,14 @@ pub const VERSION : &'static str = "1.18.1";
 #[derive(Debug)]
 pub struct Setup {
     opt: Options,
-    ext: ExtensionRegistry
+    ext: Vec<Box<Extension>>,
 }
 
 impl Default for Setup {
     fn default() -> Setup {
         // prepend default extensions
-        let mut ext = ExtensionRegistry::default();
-        ext.push(extension::Core::new()).unwrap();
+        let mut ext: Vec<Box<Extension>> = vec![];
+        ext.push(extension::Core::new());
 
         Setup {
             opt: Options::default(),
@@ -43,13 +43,14 @@ impl Default for Setup {
 /// # Examples
 ///
 /// ```
-/// use twig::{Setup, Engine};
+/// use twig::Setup;
 /// use twig::extension::Debug;
 ///
-/// let mut setup = Setup::default()
+/// let twig = Setup::default()
 ///     .set_strict_variables(true)
-///     .add_extension(Debug::new()).unwrap();
-/// let twig = setup.engine().unwrap();
+///     .add_extension(Debug::new())
+///     .init_engine()
+///     .unwrap();
 /// ```
 #[allow(dead_code)]
 impl Setup {
@@ -60,30 +61,26 @@ impl Setup {
     /// ```
     /// use twig::Setup;
     ///
-    /// let twig = Setup::default().engine().unwrap();
+    /// let twig = Setup::default().init_engine().unwrap();
     /// ```
-    pub fn engine(self) -> Result<Engine, TwigError> {
+    pub fn init_engine(self) -> Result<Engine, TwigError> {
         let Setup { opt, mut ext } = self;
 
         // append default extensions
-        try_chain!(ext.push(extension::Escaper::new(opt.autoescape)));
-        try_chain!(ext.push(extension::Optimizer::new(opt.optimizations)));
+        ext.push(extension::Escaper::new(opt.autoescape));
+        ext.push(extension::Optimizer::new(opt.optimizations));
 
         // init extensions
-        try_chain!(ext.init(&opt));
+        let extension_registry = try_chain!(ExtensionRegistry::new(ext, &opt));
 
-        // TODO: register staging extension (!)
-        //// init staging extension
-        // let staging = ext::Staging::new();
-
-        Ok(Engine::new(opt, ext))
+        Ok(Engine::new(extension_registry, opt))
     }
 
     /// Registers an extension
-    pub fn add_extension(mut self, extension: Box<Extension>) -> Result<Self, TwigError> {
-        try_chain!(self.ext.push(extension));
+    pub fn add_extension(mut self, extension: Box<Extension>) -> Self {
+        self.ext.push(extension);
 
-        Ok(self)
+        self
     }
 
     /// When set to true, it automatically set "auto_reload" to true as well
@@ -149,8 +146,8 @@ impl Setup {
         &self.opt
     }
 
-    /// Get all registered extensions
-    pub fn extensions(&self) -> &ExtensionRegistry {
+    /// Get all extensions
+    pub fn extensions(&self) -> &Vec<Box<Extension>> {
         &self.ext
     }
 }

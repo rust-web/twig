@@ -5,7 +5,8 @@
 
 //! Core Extension.
 
-use extension::api::Extension;
+use api::Extension;
+use engine;
 
 #[allow(dead_code)] // dummy
 #[derive(Default, Debug, PartialEq)]
@@ -13,6 +14,12 @@ pub struct Core;
 
 impl Extension for Core {
     fn name(&self) -> &'static str { "core" }
+
+    fn init(&mut self, _registry: &mut engine::extension_registry::Builder, _options: &engine::Options)
+        -> Result<(), engine::ExtensionRegistryError> {
+        // unimplemented!()
+        Ok(())
+    }
 }
 
 impl Core {

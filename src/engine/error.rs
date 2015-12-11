@@ -12,7 +12,7 @@ use error::{GeneralizeTo, ErrorCode};
 use loader::LoaderErrorCode;
 use api::parser::ParserErrorCode;
 use api::lexer::LexerErrorCode;
-use extension::api;
+use api::ext;
 
 pub type TwigError = Error<TwigErrorCode>;
 pub type ExtensionRegistryError = Error<ExtensionRegistryErrorCode>;
@@ -86,46 +86,40 @@ impl Display for TwigErrorCode {
 
 #[derive(Debug)]
 pub enum ExtensionRegistryErrorCode {
-    AlreadyInitialized,
-    NotInitialized,
+    /// To be used by custom implementations of `twig::api::ext::Extension::init()`
+    ExtensionInitFailure {
+        reason: String,
+    },
     DuplicateExtension {
-        prev: Box<api::Extension>,
+        name: String,
     },
     DuplicateFilter {
-        prev: Box<api::Filter>,
-        ext_name: &'static str,
+        prev: Box<ext::Filter>
     },
     DuplicateFunction {
-        prev: Box<api::Function>,
-        ext_name: &'static str,
+        prev: Box<ext::Function>
     },
     DuplicateOperatorUnary {
-        prev: api::UnaryOperator,
-        ext_name: &'static str,
+        prev: ext::UnaryOperator
     },
     DuplicateOperatorBinary {
-        prev: api::BinaryOperator,
-        ext_name: &'static str,
+        prev: ext::BinaryOperator
     },
     DuplicateTest {
-        prev: Box<api::Test>,
-        ext_name: &'static str,
+        prev: Box<ext::Test>
     },
     DuplicateTagHandler {
-        prev: Box<api::TokenParser>,
-        ext_name: &'static str,
+        prev: Box<ext::TokenParser>
     },
     DuplicateTokenParser {
-        prev: Box<api::TokenParser>,
-        ext_name: &'static str,
+        prev: Box<ext::TokenParser>
     },
 }
 
 impl ErrorCode for ExtensionRegistryErrorCode {
     fn description(&self) -> &str {
         match *self {
-            ExtensionRegistryErrorCode::AlreadyInitialized => "Engine extensions are already initialized.",
-            ExtensionRegistryErrorCode::NotInitialized => "Engine extensions are not yet initialized.",
+            ExtensionRegistryErrorCode::ExtensionInitFailure{..} => "Engine extension failed to initialize.",
             ExtensionRegistryErrorCode::DuplicateExtension{..} => "Duplicate extension.",
             ExtensionRegistryErrorCode::DuplicateFilter{..} => "Duplicate filter.",
             ExtensionRegistryErrorCode::DuplicateFunction{..} => "Duplicate function.",
@@ -143,55 +137,58 @@ impl Display for ExtensionRegistryErrorCode {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            ExtensionRegistryErrorCode::AlreadyInitialized => Ok(()),
-            ExtensionRegistryErrorCode::NotInitialized => Ok(()),
+            ExtensionRegistryErrorCode::ExtensionInitFailure {
+                ref reason
+            } => {
+                write!(f, " {}", reason)
+            },
             ExtensionRegistryErrorCode::DuplicateExtension {
+                ref name
+            } => {
+                write!(f, " {prev:?} has already been registered.",
+                    prev = name)
+            },
+            ExtensionRegistryErrorCode::DuplicateFilter {
                 prev: ref p
             } => {
                 write!(f, " {prev:?} has already been registered.",
                     prev = p)
             },
-            ExtensionRegistryErrorCode::DuplicateFilter {
-                prev: ref p, ext_name: ref x
-            } => {
-                write!(f, " {prev:?} has already been registered, while loading extension {ext:?}.",
-                    prev = p, ext = x)
-            },
             ExtensionRegistryErrorCode::DuplicateFunction {
-                prev: ref p, ext_name: ref x
+                prev: ref p
             } => {
-                write!(f, " {prev:?} has already been registered, while loading extension {ext:?}.",
-                    prev = p, ext = x)
+                write!(f, " {prev:?} has already been registered.",
+                    prev = p)
             },
             ExtensionRegistryErrorCode::DuplicateOperatorBinary {
-                prev: ref p, ext_name: ref x
+                prev: ref p
             } => {
-                write!(f, " {prev:?} has already been registered, while loading extension {ext:?}.",
-                    prev = p, ext = x)
+                write!(f, " {prev:?} has already been registered.",
+                    prev = p)
             },
             ExtensionRegistryErrorCode::DuplicateOperatorUnary {
-                prev: ref p, ext_name: ref x
+                prev: ref p
             } => {
-                write!(f, " {prev:?} has already been registered, while loading extension {ext:?}.",
-                    prev = p, ext = x)
+                write!(f, " {prev:?} has already been registered.",
+                    prev = p)
             },
             ExtensionRegistryErrorCode::DuplicateTest {
-                prev: ref p, ext_name: ref x
+                prev: ref p
             } => {
-                write!(f, " {prev:?} has already been registered, while loading extension {ext:?}.",
-                    prev = p, ext = x)
+                write!(f, " {prev:?} has already been registered.",
+                    prev = p)
             },
             ExtensionRegistryErrorCode::DuplicateTagHandler {
-                prev: ref p, ext_name: ref x
+                prev: ref p
             } => {
-                write!(f, " {prev:?} has already been registered, while loading extension {ext:?}.",
-                    prev = p, ext = x)
+                write!(f, " {prev:?} has already been registered.",
+                    prev = p)
             },
             ExtensionRegistryErrorCode::DuplicateTokenParser {
-                prev: ref p, ext_name: ref x
+                prev: ref p
             } => {
-                write!(f, " {prev:?} has already been registered, while loading extension {ext:?}.",
-                    prev = p, ext = x)
+                write!(f, " {prev:?} has already been registered.",
+                    prev = p)
             }
         }
     }
