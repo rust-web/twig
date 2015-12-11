@@ -14,9 +14,6 @@ pub type LoaderError = Error<LoaderErrorCode>;
 
 #[derive(Debug)]
 pub enum LoaderErrorCode {
-    Unreachable {
-        reason: String
-    },
     ArrayTemplateNotFound {
         name: String
     },
@@ -43,7 +40,6 @@ pub enum LoaderErrorCode {
 impl ErrorCode for LoaderErrorCode {
     fn description(&self) -> &str {
         match *self {
-            LoaderErrorCode::Unreachable{..} => "Unexptected template loader error (please report as bug with details).",
             LoaderErrorCode::ArrayTemplateNotFound{..}
             | LoaderErrorCode::FileSystemTemplateNotFound{..} => "Template not found.",
             LoaderErrorCode::FileSystemNamespaceNotInitialized{..} => "Loader is not initialized.",
@@ -59,11 +55,6 @@ impl Display for LoaderErrorCode {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            LoaderErrorCode::Unreachable {
-                ref reason
-            } => {
-                write!(f, " {}", reason)
-            },
             LoaderErrorCode::ArrayTemplateNotFound {
                 ref name
             } => {

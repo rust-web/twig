@@ -19,9 +19,6 @@ pub type ExtensionRegistryError = Error<ExtensionRegistryErrorCode>;
 
 #[derive(Debug)]
 pub enum TwigErrorCode {
-    Unreachable {
-        reason: String
-    },
     Loader,
     LoaderNotInitialized,
     Lexer,
@@ -50,7 +47,6 @@ impl GeneralizeTo<TwigErrorCode> for ExtensionRegistryErrorCode {
 impl ErrorCode for TwigErrorCode {
     fn description(&self) -> &str {
         match *self {
-            TwigErrorCode::Unreachable{..} => "Unexptected twig error (please report as bug with details).",
             TwigErrorCode::Loader => "Twig loader error.",
             TwigErrorCode::LoaderNotInitialized => "The template loader must be initializied prior usage.",
             TwigErrorCode::Lexer => "Twig lexer error.",
@@ -67,11 +63,6 @@ impl Display for TwigErrorCode {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            TwigErrorCode::Unreachable {
-                ref reason
-            } => {
-                write!(f, " {}.", reason)
-            },
             TwigErrorCode::Loader
             | TwigErrorCode::LoaderNotInitialized
             | TwigErrorCode::Lexer

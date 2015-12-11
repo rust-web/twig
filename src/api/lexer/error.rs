@@ -7,7 +7,7 @@
 
 use std::fmt::{self, Display};
 use error::Error;
-use error::{GeneralizeTo, ErrorCode};
+use error::ErrorCode;
 
 use api::token;
 use api::lexer::job::cursor;
@@ -15,16 +15,12 @@ use api::lexer::job::cursor;
 pub type SyntaxError = Error<SyntaxErrorCode>;
 pub type LexerError = Error<LexerErrorCode>;
 
-impl GeneralizeTo<LexerErrorCode> for SyntaxErrorCode {
-    fn generalize(&self) -> LexerErrorCode { LexerErrorCode::SyntaxError }
-}
+// impl GeneralizeTo<LexerErrorCode> for SyntaxErrorCode {
+//     fn generalize(&self) -> LexerErrorCode { LexerErrorCode::SyntaxError }
+// }
 
 #[derive(Debug)]
 pub enum SyntaxErrorCode {
-    Unreachable {
-        reason: String,
-        cursor: cursor::CursorDump,
-    },
     UnexpectedCharacter {
         character: char,
         cursor: cursor::CursorDump,
@@ -57,7 +53,6 @@ pub enum SyntaxErrorCode {
 impl ErrorCode for SyntaxErrorCode {
     fn description(&self) -> &str {
         match *self {
-            SyntaxErrorCode::Unreachable{..} => "Unexptected syntax error (please report as bug with details).",
             SyntaxErrorCode::UnexpectedCharacter{..} => "Unexpected character.",
             SyntaxErrorCode::UnexpectedBracket{..} => "Unexpected bracket.",
             SyntaxErrorCode::UnexpectedEof{..} => "Unexpected end of template.",
@@ -74,14 +69,6 @@ impl Display for SyntaxErrorCode {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            SyntaxErrorCode::Unreachable {
-                reason: ref r,
-                cursor: ref c
-            } => {
-                write!(f, " {reason} at {cursor}.",
-                    reason = r,
-                    cursor = c)
-            },
             SyntaxErrorCode::UnexpectedCharacter {
                 character, ref cursor
             } => {
@@ -136,29 +123,19 @@ impl Display for SyntaxErrorCode {
 
 #[derive(Debug, PartialEq)]
 pub enum LexerErrorCode {
-    Unreachable {
-        reason: String
-    },
-    MissingExtensions,
     PatternRegexError,
     _InvalidPatternMatch,
     InvalidValue {
         value: String
     },
-    _InvalidState,
-    SyntaxError,
 }
 
 impl ErrorCode for LexerErrorCode {
     fn description(&self) -> &str {
         match *self {
-            LexerErrorCode::Unreachable{..} => "Unexptected lexer error (please report as bug with details).",
-            LexerErrorCode::MissingExtensions => "Could not initialize lexer due to missing engine extensions.",
             LexerErrorCode::PatternRegexError => "Could not initialize lexer due to invalid regular expression.",
             LexerErrorCode::_InvalidPatternMatch => "Invalid pattern match.",
             LexerErrorCode::InvalidValue{..} => "Invalid value.",
-            LexerErrorCode::_InvalidState => "Invalid state.",
-            LexerErrorCode::SyntaxError => "Syntax error.",
         }
     }
 }
@@ -168,12 +145,6 @@ impl Display for LexerErrorCode {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            LexerErrorCode::Unreachable {
-                ref reason
-            } => {
-                write!(f, " {}.", reason)
-            },
-            LexerErrorCode::MissingExtensions => Ok(()),
             LexerErrorCode::PatternRegexError => Ok(()),
             LexerErrorCode::_InvalidPatternMatch => Ok(()),
             LexerErrorCode::InvalidValue {
@@ -181,8 +152,6 @@ impl Display for LexerErrorCode {
             } => {
                 write!(f, " Found value {}", value)
             },
-            LexerErrorCode::_InvalidState => Ok(()),
-            LexerErrorCode::SyntaxError => Ok(()),
         }
     }
 }

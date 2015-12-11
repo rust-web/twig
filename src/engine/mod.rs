@@ -9,9 +9,8 @@ mod template_cache;
 use loader::Loader;
 use std::rc::Rc;
 use template;
-use error::ErrorCode;
 use setup::Setup;
-use api::{Parser, lexer, Lexer};
+use api::{parser, Parser, lexer, Lexer};
 
 pub mod error;
 pub mod options;
@@ -54,7 +53,7 @@ impl Engine {
     pub fn new(ext: ExtensionRegistry, options: Options) -> Self {
         Engine {
             options: options,
-            ext: Rc::new(ext),
+            ext: Rc::new(ext), // TODO STREAMLINING: - get rid of this!
             loader: None,
             lexer: None,
             parser: None,
@@ -151,7 +150,9 @@ impl Engine {
         match self.lexer {
             Some(ref lexer) => return Ok(lexer),
             None => {
-                self.lexer = Some(try_chain!(Lexer::new(self, lexer::Options::default())));
+                let _options: lexer::Options = unimplemented!();
+
+                self.lexer = Some(try_chain!(Lexer::new(_options)));
                 return self.lexer();
             }
         }
@@ -162,12 +163,9 @@ impl Engine {
         match self.parser {
             Some(ref parser) => return Ok(parser),
             None => {
-                self.parser = match Parser::new(&self) {
-                    Err(e) => return Err(TwigErrorCode::Parser
-                        .at(loc!())
-                        .caused_by(e)),
-                    Ok(parser) => Some(parser)
-                };
+                let _options: parser::Options = unimplemented!();
+
+                self.parser = Some(try_chain!(Parser::new(_options)));
                 return self.parser();
             }
         }

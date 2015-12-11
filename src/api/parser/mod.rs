@@ -5,21 +5,22 @@
 
 //! Parser
 
-use engine::Engine;
 use template;
 use api::token;
 
+pub mod options;
 pub mod error;
 pub mod expression_parser;
 pub mod job;
 pub use self::job::Job;
 pub use self::error::{ParserError, ParserErrorCode};
+pub use self::options::Options;
 
 #[derive(Debug, Default)]
 pub struct Parser;
 
 impl Parser {
-    pub fn new(_twig: &Engine) -> Result<Parser, ParserError> {
+    pub fn new(_opt: Options) -> Result<Parser, ParserError> {
         unimplemented!()
     }
 

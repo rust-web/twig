@@ -67,8 +67,8 @@ impl Setup {
         let Setup { opt, mut ext } = self;
 
         // append default extensions
-        ext.push(extension::Escaper::new(opt.autoescape));
-        ext.push(extension::Optimizer::new(opt.optimizations));
+        ext.push(extension::Escaper::new(opt.auto_escape()));
+        ext.push(extension::Optimizer::new(opt.optimizations()));
 
         // init extensions
         let extension_registry = try_chain!(ExtensionRegistry::new(ext, &opt));
@@ -86,7 +86,7 @@ impl Setup {
     /// When set to true, it automatically set "auto_reload" to true as well
     ///     (default to false)
     pub fn set_debug(mut self, debug: bool) -> Self {
-        self.opt.debug = debug;
+        self.opt.set_debug(debug);
 
         self
     }
@@ -94,7 +94,7 @@ impl Setup {
     /// Whether to ignore invalid variables in templates
     ///     (default to false).
     pub fn set_strict_variables(mut self, strict_variables: bool) -> Self {
-        self.opt.strict_variables = strict_variables;
+        self.opt.set_strict_variables(strict_variables);
 
         self
     }
@@ -105,15 +105,15 @@ impl Setup {
     ///     * html, js: set the autoescaping to one of the supported strategies
     ///     * filename: set the autoescaping strategy based on the template filename extension
     ///     * PHP callback: a PHP callback that returns an escaping strategy based on the template "filename"
-    pub fn set_autoescape(mut self, autoescape: options::Autoescape) -> Self {
-        self.opt.autoescape = autoescape;
+    pub fn set_auto_escape(mut self, auto_escape: options::AutoEscape) -> Self {
+        self.opt.set_auto_escape(auto_escape);
 
         self
     }
 
     /// An absolute path where to store the compiled templates (optional)
     pub fn set_cache(mut self, cache: Option<&Path>) -> Self {
-        self.opt.cache = cache.map(|reference| reference.to_owned());
+        self.opt.set_cache(cache.map(|reference| reference.to_owned()));
 
         self
     }
@@ -121,15 +121,15 @@ impl Setup {
     /// Whether to reload the template if the original source changed (optional).
     ///     If you don't provide the auto_reload option, it will be
     ///     determined automatically based on the debug value.
-    pub fn set_auto_reload(mut self, auto_reload: Option<bool>) -> Self {
-        self.opt.auto_reload = auto_reload;
+    pub fn set_auto_reload(mut self, auto_reload: bool) -> Self {
+        self.opt.set_auto_reload(auto_reload);
 
         self
     }
 
     /// A flag that indicates whether optimizations are applied
     pub fn set_optimizations(mut self, optimizations: options::Optimizations) -> Self {
-        self.opt.optimizations = optimizations;
+        self.opt.set_optimizations(optimizations);
 
         self
     }

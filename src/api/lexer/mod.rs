@@ -6,7 +6,6 @@
 //! Lexes a template string.
 
 use template;
-use engine::Engine;
 use api::token;
 
 pub mod job;
@@ -20,7 +19,7 @@ pub use self::options::Options;
 pub struct Lexer;
 
 impl Lexer {
-    pub fn new(_twig: &Engine, _opt: Options) -> Result<Lexer, LexerError> {
+    pub fn new(_opt: Options) -> Result<Lexer, LexerError> {
         unimplemented!()
     }
 

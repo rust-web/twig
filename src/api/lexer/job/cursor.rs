@@ -11,7 +11,6 @@ use error::Dump;
 
 pub type Position = usize;
 pub type Line = usize;
-pub type CursorDump = String;
 
 #[derive(Debug)]
 pub struct Cursor<'a> {
@@ -31,6 +30,25 @@ impl<'a> Dump for Cursor<'a> {
     type Data = CursorDump;
 
     fn dump(&self) -> Self::Data {
-        self.to_string()
+        CursorDump {
+            pos: self.pos,
+            end: self.end,
+            line: self.line,
+            template: (*self.template).clone()
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct CursorDump {
+    pos: Position,   // 0,..
+    end: Position,   // 0,..
+    line: Line,    // 1,..
+    template: template::Raw,
+}
+
+impl fmt::Display for CursorDump {
+    fn fmt(&self, _f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        unimplemented!()
     }
 }

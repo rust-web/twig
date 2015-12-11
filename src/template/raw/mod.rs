@@ -8,7 +8,7 @@
 use std::fmt;
 
 #[derive(Default)]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Raw {
     name: String, // twig template name, e.g. "@namespace/path/to/template"
     pub code: String,
