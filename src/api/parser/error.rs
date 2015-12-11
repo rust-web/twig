@@ -9,9 +9,9 @@ use std::fmt::{self, Display};
 use error::Error;
 use error::{GeneralizeTo, ErrorCode};
 
-use engine::parser::token::TokenErrorCode;
-use engine::parser::job::{self, cursor};
-use engine::parser::token;
+use api::token::TokenErrorCode;
+use api::parser::job::{self, cursor};
+use api::token;
 
 pub type ParserError = Error<ParserErrorCode>;
 pub type NodeError = Error<NodeErrorCode>; // todo move somewhere else??

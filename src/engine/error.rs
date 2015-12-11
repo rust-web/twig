@@ -10,7 +10,8 @@ use error::Error;
 use error::{GeneralizeTo, ErrorCode};
 
 use loader::LoaderErrorCode;
-use engine::parser::{ParserErrorCode, LexerErrorCode};
+use api::parser::ParserErrorCode;
+use api::lexer::LexerErrorCode;
 use extension::api;
 
 pub type TwigError = Error<TwigErrorCode>;

@@ -6,7 +6,7 @@
 //! Node.
 
 use std::fmt::Debug;
-use engine::parser::token::stream::Position;
+use api::token::stream::Position;
 
 pub trait Node : Debug {
     fn tag(&self) -> &str;

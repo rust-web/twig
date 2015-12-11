@@ -7,9 +7,11 @@
 
 use std::fmt;
 use std::collections::HashMap;
-use engine::{self, Node};
-use engine::parser::{Job, ParserError};
-use engine::parser::token::stream::Item;
+use engine;
+use api::parser::{Job, ParserError};
+use api::token::stream::Item;
+use api::Node;
+
 
 /// Extends the Twig Engine with new behaviour.
 pub trait Extension : fmt::Debug {
@@ -88,7 +90,7 @@ pub trait TokenParser : fmt::Debug {
 }
 
 pub mod token_parser {
-    use engine::parser::token::stream::Item;
+    use api::token::stream::Item;
 
     pub type Test = Fn(&Item) -> TestResult;
 

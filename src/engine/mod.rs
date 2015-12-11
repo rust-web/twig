@@ -11,14 +11,11 @@ use std::rc::Rc;
 use template;
 use error::ErrorCode;
 use setup::Setup;
+use api::{Parser, lexer, Lexer};
 
 pub mod error;
 pub mod options;
 pub mod extension_registry;
-pub mod parser;
-pub mod node;
-pub use self::node::Node;
-pub use self::parser::{Parser, lexer, Lexer};
 pub use self::error::{TwigError, TwigErrorCode, ExtensionRegistryError, ExtensionRegistryErrorCode};
 pub use self::options::Options;
 pub use self::extension_registry::ExtensionRegistry;

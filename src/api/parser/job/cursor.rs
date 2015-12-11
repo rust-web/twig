@@ -5,7 +5,7 @@
 
 //! Position within a token stream.
 
-use engine::parser::token::stream::{self, Stream};
+use api::token::stream::{self, Stream};
 use std::fmt;
 use error::Dump;
 

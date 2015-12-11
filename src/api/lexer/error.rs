@@ -9,8 +9,8 @@ use std::fmt::{self, Display};
 use error::Error;
 use error::{GeneralizeTo, ErrorCode};
 
-use engine::parser::token;
-use engine::parser::lexer::job::cursor;
+use api::token;
+use api::lexer::job::cursor;
 
 pub type SyntaxError = Error<SyntaxErrorCode>;
 pub type LexerError = Error<LexerErrorCode>;

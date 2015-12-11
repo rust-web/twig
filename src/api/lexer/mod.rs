@@ -7,7 +7,7 @@
 
 use template;
 use engine::Engine;
-use engine::parser::token;
+use api::token;
 
 pub mod job;
 pub mod error;

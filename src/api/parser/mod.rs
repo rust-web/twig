@@ -7,17 +7,12 @@
 
 use engine::Engine;
 use template;
+use api::token;
 
 pub mod error;
 pub mod expression_parser;
-pub mod token;
-pub mod lexer;
 pub mod job;
 pub use self::job::Job;
-pub use self::lexer::Lexer;
-pub use self::lexer::LexerError;
-pub use self::lexer::LexerErrorCode;
-pub use self::token::Token;
 pub use self::error::{ParserError, ParserErrorCode};
 
 #[derive(Debug, Default)]

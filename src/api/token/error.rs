@@ -8,7 +8,7 @@
 use std::fmt::{self, Display};
 use error::Error;
 use error::ErrorCode;
-use engine::parser::token;
+use api::token;
 
 pub type TokenError = Error<TokenErrorCode>;
 

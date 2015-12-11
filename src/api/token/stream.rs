@@ -6,9 +6,9 @@
 //! Represents a token stream.
 
 use std::fmt;
-use engine::parser::token::{self, Token};
+use api::token::{self, Token};
 use template;
-use engine::parser::token::{TokenError, TokenErrorCode};
+use api::token::{TokenError, TokenErrorCode};
 use error::Dump;
 
 #[derive(Debug, Default, Clone)]

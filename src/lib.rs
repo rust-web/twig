@@ -72,6 +72,7 @@
 extern crate regex;
 
 #[macro_use] pub mod error; // should be first :-)
+pub mod api;
 pub mod engine;
 pub mod extension;
 pub mod loader;
