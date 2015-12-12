@@ -85,9 +85,11 @@ pub trait Dump {
     fn dump(&self) -> Self::Data;
 }
 
-/// Generic twig error
+/// Generic error with backtrace.
 ///
-/// Wrapper around some `ErrorCode` - adds location support and error-chaining.
+/// Wrapper around some error type `T` implementing `std::error::Error`.
+/// * Adds support for a backtrace.
+/// * Automatically derefs to the inner error.
 pub struct Traced<T>
     where T: Error
 {
@@ -121,12 +123,6 @@ impl<T> Traced<T> where
         }
     }
 
-    /// Return the associated error code.
-    #[allow(dead_code)] // only used by tests
-    pub fn error(&self) -> &T {
-        &self.error
-    }
-
     /// Return the first location the error occured.
     pub fn location(&self) -> Option<&Location> {
         self.trace.first()
@@ -136,7 +132,7 @@ impl<T> Traced<T> where
         &self.trace
     }
 
-    // should not name it `at`, because `Traced` implements `ErrorExt`, too
+    // should not name it `at`, because `Traced` derefs to `Error` which impl `ErrorExt::at()`
     pub fn trace<R>(self, loc: Location) -> Traced<R>
         where T: Into<R>,
               R: Error
@@ -158,16 +154,13 @@ impl<T> Traced<T> where
     }
 }
 
-// delegate to inner error
-impl<T> Error for Traced<T> where
+impl<T> Deref for Traced<T> where
     T: Error
 {
-    fn description(&self) -> &str {
-        &self.error.description()
-    }
+    type Target = T;
 
-    fn cause<'a>(&'a self) -> Option<&'a Error> {
-        self.error.cause()
+    fn deref(&self) -> &Self::Target {
+        &self.error
     }
 }
 
