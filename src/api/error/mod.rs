@@ -93,10 +93,7 @@ pub trait Dump {
 pub struct Traced<T>
     where T: Error
 {
-    // the error codes are going to be structured enums
     error: T,
-
-    /// Backtrace
     trace: Trace,
 }
 
