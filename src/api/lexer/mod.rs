@@ -7,11 +7,12 @@
 
 use template;
 use api::token;
+use api::error::Traced;
 
 pub mod job;
 pub mod error;
 pub mod options;
-pub use self::error::{LexerError, LexerErrorCode, SyntaxError, SyntaxErrorCode};
+pub use self::error::{LexerError, SyntaxError};
 pub use self::options::Options;
 
 
@@ -19,12 +20,12 @@ pub use self::options::Options;
 pub struct Lexer;
 
 impl Lexer {
-    pub fn new(_opt: Options) -> Result<Lexer, LexerError> {
+    pub fn new(_opt: Options) -> Result<Lexer, Traced<LexerError>> {
         unimplemented!()
     }
 
     #[allow(dead_code)] // TODO: testcase
-    pub fn tokenize<'a, 't> (&'a self, _template: &'t template::Raw) -> Result<token::Stream<'t>, LexerError>
+    pub fn tokenize<'a, 't> (&'a self, _template: &'t template::Raw) -> Result<token::Stream<'t>, Traced<LexerError>>
         where 't: 'a // the template must outlive the Lexer
     {
         unimplemented!()

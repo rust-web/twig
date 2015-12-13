@@ -6,14 +6,11 @@
 //! Typisation of loader errors.
 
 use std::fmt::{self, Display};
-use error::Error;
-use error::ErrorCode;
+use std::error::Error;
 use std::path::PathBuf;
 
-pub type LoaderError = Error<LoaderErrorCode>;
-
 #[derive(Debug)]
-pub enum LoaderErrorCode {
+pub enum LoaderError {
     ArrayTemplateNotFound {
         name: String
     },
@@ -37,30 +34,30 @@ pub enum LoaderErrorCode {
     }
 }
 
-impl ErrorCode for LoaderErrorCode {
+impl Error for LoaderError {
     fn description(&self) -> &str {
         match *self {
-            LoaderErrorCode::ArrayTemplateNotFound{..}
-            | LoaderErrorCode::FileSystemTemplateNotFound{..} => "Template not found.",
-            LoaderErrorCode::FileSystemNamespaceNotInitialized{..} => "Loader is not initialized.",
-            LoaderErrorCode::FileSystemMalformedNamespacedPath{..}
-            | LoaderErrorCode::FileSystemInvalidPath{..} => "Invalid template path.",
-            LoaderErrorCode::FileSystemTemplateNotReadable{..} => "Could not read template file.",
+            LoaderError::ArrayTemplateNotFound{..}
+            | LoaderError::FileSystemTemplateNotFound{..} => "Template not found.",
+            LoaderError::FileSystemNamespaceNotInitialized{..} => "Loader is not initialized.",
+            LoaderError::FileSystemMalformedNamespacedPath{..}
+            | LoaderError::FileSystemInvalidPath{..} => "Invalid template path.",
+            LoaderError::FileSystemTemplateNotReadable{..} => "Could not read template file.",
         }
     }
 }
 
-impl Display for LoaderErrorCode {
+impl Display for LoaderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            LoaderErrorCode::ArrayTemplateNotFound {
+            LoaderError::ArrayTemplateNotFound {
                 ref name
             } => {
                 write!(f, " Template {:?} is not present in array template loader.", name)
             },
-            LoaderErrorCode::FileSystemTemplateNotFound {
+            LoaderError::FileSystemTemplateNotFound {
                 ref raw_path, ref namespace, ref dirs
             } => {
                 write!(f, " Unable to find template path {path:?} in namespace {id:?} (looked into: {dirs:?})",
@@ -68,24 +65,24 @@ impl Display for LoaderErrorCode {
                     id = namespace,
                     dirs = dirs)
             },
-            LoaderErrorCode::FileSystemNamespaceNotInitialized {
+            LoaderError::FileSystemNamespaceNotInitialized {
                 ref namespace
             } => {
                 write!(f, " There are no registered directories for template namespace {}", namespace)
             },
-            LoaderErrorCode::FileSystemMalformedNamespacedPath {
+            LoaderError::FileSystemMalformedNamespacedPath {
                 ref template_name
             } => {
                 write!(f, " {template} is malformed (expecting a namespaced template path like '@namespace/path_to_file').",
                     template = template_name)
             },
-            LoaderErrorCode::FileSystemInvalidPath{
+            LoaderError::FileSystemInvalidPath{
                 ref path
             } => {
                 write!(f, " Looks like you try to load a template outside configured directories ({path:?}).",
                     path = path)
             },
-            LoaderErrorCode::FileSystemTemplateNotReadable{
+            LoaderError::FileSystemTemplateNotReadable{
                 ref name, ref path
             } => {
                 write!(f, " Missing read-permission for {path:?} while loading template {name:?}.",

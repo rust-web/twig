@@ -11,11 +11,12 @@ use std::rc::Rc;
 use template;
 use setup::Setup;
 use api::{parser, Parser, lexer, Lexer};
+use api::error::Traced;
 
 pub mod error;
 pub mod options;
 pub mod extension_registry;
-pub use self::error::{TwigError, TwigErrorCode, ExtensionRegistryError, ExtensionRegistryErrorCode};
+pub use self::error::{TwigError, ExtensionRegistryError};
 pub use self::options::Options;
 pub use self::extension_registry::ExtensionRegistry;
 
@@ -66,7 +67,7 @@ impl Engine {
     /// * When the template cannot be found
     /// * When an error occurred during compilation
     /// * When an error occurred during rendering
-    pub fn render(&mut self, _path: &str, _data: ()) -> Result<String, TwigError> {
+    pub fn render(&mut self, _path: &str, _data: ()) -> Result<String, Traced<TwigError>> {
         unimplemented!()
     }
 
@@ -76,7 +77,7 @@ impl Engine {
     /// * When the template cannot be found
     /// * When an error occurred during compilation
     /// * When an error occurred during rendering
-    pub fn display(&mut self, _path: &str, _data: ()) -> Result<(), TwigError> {
+    pub fn display(&mut self, _path: &str, _data: ()) -> Result<(), Traced<TwigError>> {
        unimplemented!()
     }
 
@@ -85,7 +86,7 @@ impl Engine {
     /// # Failures
     /// * When the template cannot be found
     /// * When an error occurred during compilation
-    pub fn load_template(&mut self, path: &str, _index: Option<u32>) -> Result<template::Compiled, TwigError> {
+    pub fn load_template(&mut self, path: &str, _index: Option<u32>) -> Result<template::Compiled, Traced<TwigError>> {
         // TODO: Cache compiled templates
         //  * cache lookup
         //  * check if cache is fresh
@@ -99,9 +100,9 @@ impl Engine {
     ///
     /// # Failures
     /// * When the template cannot be found
-    fn load_template_raw(&mut self, path: &str) -> Result<template::Raw, TwigError> {
+    fn load_template_raw(&mut self, path: &str) -> Result<template::Raw, Traced<TwigError>> {
         let loader = try!(self.loader());
-        let source = try_chain!(loader.source(path));
+        let source = try_traced!(loader.source(path));
         Ok(template::Raw::new(source, path))
     }
 
@@ -109,15 +110,15 @@ impl Engine {
     ///
     /// # Failures
     /// * When an error occurred during lexing or parsing.
-    fn compile_template(&mut self, template: &template::Raw) -> Result<template::Compiled, TwigError> {
+    fn compile_template(&mut self, template: &template::Raw) -> Result<template::Compiled, Traced<TwigError>> {
         let tokenstream = {
             let lexer = try!(self.lexer());
-            try_chain!(lexer.tokenize(template))
+            try_traced!(lexer.tokenize(template))
         };
 
         let compiled = {
             let parser = try!(self.parser());
-            try_chain!(parser.parse(&tokenstream))
+            try_traced!(parser.parse(&tokenstream))
         };
 
         Ok(compiled)
@@ -136,36 +137,36 @@ impl Engine {
     }
 
     /// Get the loader instance.
-    pub fn loader(&mut self) -> Result<&mut Loader, TwigError> {
+    pub fn loader(&mut self) -> Result<&mut Loader, Traced<TwigError>> {
         match self.loader {
             Some(ref mut loader) => return Ok(&mut **loader),
             None => {
-                return err!(TwigErrorCode::LoaderNotInitialized)
+                return traced_err!(TwigError::LoaderNotInitialized)
             }
         }
     }
 
     /// Get the lexer instance.
-    pub fn lexer(&mut self) -> Result<&Lexer, TwigError> {
+    pub fn lexer(&mut self) -> Result<&Lexer, Traced<TwigError>> {
         match self.lexer {
             Some(ref lexer) => return Ok(lexer),
             None => {
                 let _options: lexer::Options = unimplemented!();
 
-                self.lexer = Some(try_chain!(Lexer::new(_options)));
+                self.lexer = Some(try_traced!(Lexer::new(_options)));
                 return self.lexer();
             }
         }
     }
 
     /// Get the parser instance.
-    pub fn parser(&mut self) -> Result<&Parser, TwigError> {
+    pub fn parser(&mut self) -> Result<&Parser, Traced<TwigError>> {
         match self.parser {
             Some(ref parser) => return Ok(parser),
             None => {
                 let _options: parser::Options = unimplemented!();
 
-                self.parser = Some(try_chain!(Parser::new(_options)));
+                self.parser = Some(try_traced!(Parser::new(_options)));
                 return self.parser();
             }
         }

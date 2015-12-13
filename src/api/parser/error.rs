@@ -6,22 +6,14 @@
 //! Typisation of parser errors.
 
 use std::fmt::{self, Display};
-use error::Error;
-use error::ErrorCode;
+use std::error::Error;
 
 use api::parser::job::{self, cursor};
 use api::token;
 
-pub type ParserError = Error<ParserErrorCode>;
-pub type NodeError = Error<NodeErrorCode>; // todo move somewhere else??
-
-// impl GeneralizeTo<ParserErrorCode> for TokenErrorCode {
-//     fn generalize(&self) -> ParserErrorCode { ParserErrorCode::TokenError }
-// }
-
 #[allow(dead_code)]
 #[derive(Debug)]
-pub enum ParserErrorCode {
+pub enum ParserError {
     TokenParserError {
         tag: &'static str, // known at compile-time
         error: String,
@@ -48,43 +40,43 @@ pub enum ParserErrorCode {
     },
 }
 
-impl ErrorCode for ParserErrorCode {
+impl Error for ParserError {
     fn description(&self) -> &str {
         match *self {
-            ParserErrorCode::TokenParserError{..} => "Token parser error.",
-            ParserErrorCode::NoTagHandler{..} => "There is no registered tag handler for named block.",
-            ParserErrorCode::UnexpectedBinaryOperator{..} => "Unexpected Binary Operator.",
-            ParserErrorCode::UnexpectedToken{..} => "Unexpected Token.",
-            ParserErrorCode::UnexpectedEof{..} => "Unexpected end of token stream.",
+            ParserError::TokenParserError{..} => "Token parser error.",
+            ParserError::NoTagHandler{..} => "There is no registered tag handler for named block.",
+            ParserError::UnexpectedBinaryOperator{..} => "Unexpected Binary Operator.",
+            ParserError::UnexpectedToken{..} => "Unexpected Token.",
+            ParserError::UnexpectedEof{..} => "Unexpected end of token stream.",
         }
     }
 }
 
-impl Display for ParserErrorCode {
+impl Display for ParserError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            ParserErrorCode::TokenParserError {
+            ParserError::TokenParserError {
                 tag, ref error, ref job
             } => {
                 write!(f, " {tag:?}-block: {error} for job {job}.",
                     tag = tag, error = error, job = job)
             },
-            ParserErrorCode::NoTagHandler {
+            ParserError::NoTagHandler {
                 tag: ref t, position: ref p, job: ref j
             } => {
                 write!(f, " Found block {tag} at {pos} for job {job}.",
                     tag = t, pos = p, job = j)
             },
-            ParserErrorCode::UnexpectedBinaryOperator {
+            ParserError::UnexpectedBinaryOperator {
                 name: ref n, job: ref j
             } => {
                 write!(f, " The binary operator {name:?} is unknown to the engine for job {job}",
                     name = n,
                     job = j)
             },
-            ParserErrorCode::UnexpectedToken {
+            ParserError::UnexpectedToken {
                 reason: r, expected: ref x, found: ref i
             } => {
                 try!(write!(f, " Expected token {x:?} but found {t:?} at {p:?}.",
@@ -96,7 +88,7 @@ impl Display for ParserErrorCode {
 
                 Ok(())
             },
-            ParserErrorCode::UnexpectedEof {
+            ParserError::UnexpectedEof {
                 reason, ref expected, ref cursor
             } => {
                 if let Some(ref expected) = *expected {
@@ -115,27 +107,27 @@ impl Display for ParserErrorCode {
 
 #[allow(dead_code)]
 #[derive(Debug)]
-pub enum NodeErrorCode {
+pub enum NodeError {
     AttributeNotFound {
         key: String,
         node_tag: String
     }
 }
 
-impl ErrorCode for NodeErrorCode {
+impl Error for NodeError {
     fn description(&self) -> &str {
         match *self {
-            NodeErrorCode::AttributeNotFound{..} => "Attribute not found.",
+            NodeError::AttributeNotFound{..} => "Attribute not found.",
         }
     }
 }
 
-impl Display for NodeErrorCode {
+impl Display for NodeError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            NodeErrorCode::AttributeNotFound{
+            NodeError::AttributeNotFound{
                 ref key, ref node_tag
             } => {
                 write!(f, " Attribute {key:?} does not exist for Node {node:?}.",

@@ -8,6 +8,7 @@
 use std::path::Path;
 use extension;
 use api::Extension;
+use api::error::Traced;
 use engine::{Engine, options, Options, ExtensionRegistry};
 use engine::error::{TwigError};
 
@@ -63,7 +64,7 @@ impl Setup {
     ///
     /// let twig = Setup::default().init_engine().unwrap();
     /// ```
-    pub fn init_engine(self) -> Result<Engine, TwigError> {
+    pub fn init_engine(self) -> Result<Engine, Traced<TwigError>> {
         let Setup { opt, mut ext } = self;
 
         // append default extensions
@@ -71,7 +72,7 @@ impl Setup {
         ext.push(extension::Optimizer::new(opt.optimizations()));
 
         // init extensions
-        let extension_registry = try_chain!(ExtensionRegistry::new(ext, &opt));
+        let extension_registry = try_traced!(ExtensionRegistry::new(ext, &opt));
 
         Ok(Engine::new(extension_registry, opt))
     }

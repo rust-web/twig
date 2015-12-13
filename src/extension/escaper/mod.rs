@@ -6,6 +6,7 @@
 //! Escaper Extension
 
 use api::Extension;
+use api::error::Traced;
 use engine;
 
 #[derive(Default, Debug, PartialEq)]
@@ -32,7 +33,7 @@ impl Extension for Escaper {
     fn name(&self) -> &'static str { "escaper" }
 
     fn init(&mut self, _registry: &mut engine::extension_registry::Builder, _options: &engine::Options)
-        -> Result<(), engine::ExtensionRegistryError> {
+        -> Result<(), Traced<engine::ExtensionRegistryError>> {
         // unimplemented!()
 
         Ok(())

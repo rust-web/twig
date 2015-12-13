@@ -6,6 +6,7 @@
 //! Core Extension.
 
 use api::Extension;
+use api::error::Traced;
 use engine;
 
 #[allow(dead_code)] // dummy
@@ -16,7 +17,7 @@ impl Extension for Core {
     fn name(&self) -> &'static str { "core" }
 
     fn init(&mut self, _registry: &mut engine::extension_registry::Builder, _options: &engine::Options)
-        -> Result<(), engine::ExtensionRegistryError> {
+        -> Result<(), Traced<engine::ExtensionRegistryError>> {
         // unimplemented!()
         Ok(())
     }

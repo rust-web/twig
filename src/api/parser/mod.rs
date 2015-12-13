@@ -7,25 +7,26 @@
 
 use template;
 use api::token;
+use api::error::Traced;
 
 pub mod options;
 pub mod error;
 pub mod expression_parser;
 pub mod job;
 pub use self::job::Job;
-pub use self::error::{ParserError, ParserErrorCode};
+pub use self::error::ParserError;
 pub use self::options::Options;
 
 #[derive(Debug, Default)]
 pub struct Parser;
 
 impl Parser {
-    pub fn new(_opt: Options) -> Result<Parser, ParserError> {
+    pub fn new(_opt: Options) -> Result<Parser, Traced<ParserError>> {
         unimplemented!()
     }
 
     #[allow(dead_code)] // TODO: testcase
-    pub fn parse<'a, 't> (&'a self, _stream: &'t token::Stream<'t>) -> Result<template::Compiled, ParserError>
+    pub fn parse<'a, 't> (&'a self, _stream: &'t token::Stream<'t>) -> Result<template::Compiled, Traced<ParserError>>
         where 't: 'a // the token stream must outlive the Parser
     {
         unimplemented!()

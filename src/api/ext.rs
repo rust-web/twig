@@ -17,6 +17,7 @@ use engine;
 use api::parser::{Job, ParserError};
 use api::token::stream::Item;
 use api::Node;
+use api::error::Traced;
 
 
 /// Extends the Twig Engine with new behaviour.
@@ -29,7 +30,7 @@ pub trait Extension : fmt::Debug {
     /// This method is supposed to push all filters, functions etc. of the extension to the
     /// extension registry builder.
     fn init(&mut self, registry: &mut engine::extension_registry::Builder, options: &engine::Options)
-        -> Result<(), engine::ExtensionRegistryError>; // TODO: add error handling ???
+        -> Result<(), Traced<engine::ExtensionRegistryError>>; // TODO: add error handling ???
 }
 
 // Abstract extension traits + structs - TODO: check what needs to be trait / can be struct
@@ -70,7 +71,7 @@ pub trait Test : fmt::Debug {}
 pub trait TokenParser : fmt::Debug {
     fn tag(&self) -> &'static str;
 
-    fn parse(&self, job: &mut Job, item: &Item) -> Result<Box<Node>, ParserError>;
+    fn parse(&self, job: &mut Job, item: &Item) -> Result<Box<Node>, Traced<ParserError>>;
 }
 
 pub mod token_parser {

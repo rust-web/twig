@@ -5,6 +5,7 @@
 
 //! The extensions API for the Twig Template Engine.
 
+#[macro_use] pub mod error;
 pub mod ext;
 pub mod lexer;
 pub mod node;

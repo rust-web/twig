@@ -8,8 +8,8 @@
 use std::fmt;
 use api::token::{self, Token};
 use template;
-use api::token::{TokenError, TokenErrorCode};
-use error::Dump;
+use api::token::TokenError;
+use api::error::{Traced, Dump};
 
 #[derive(Debug, Default, Clone)]
 pub struct Position {
@@ -40,13 +40,13 @@ impl Item {
         &self.position
     }
 
-    pub fn expect<T>(&self, pattern: T, reason: Option<&'static str>) -> Result<&Item, TokenError>
+    pub fn expect<T>(&self, pattern: T, reason: Option<&'static str>) -> Result<&Item, Traced<TokenError>>
         where T: token::Pattern + 'static
     {
         if pattern.matches(self.token()) {
             Ok(&self)
         } else {
-            err!(TokenErrorCode::UnexpectedTokenAtItem {
+            traced_err!(TokenError::UnexpectedTokenAtItem {
                 reason: reason,
                 expected: <token::Pattern as Dump>::dump(&pattern),
                 found: self.dump(),

@@ -7,7 +7,7 @@
 
 use api::token::stream::{self, Stream};
 use std::fmt;
-use error::Dump;
+use api::error::Dump;
 
 pub type Position = usize;
 

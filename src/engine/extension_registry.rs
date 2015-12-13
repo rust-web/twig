@@ -5,12 +5,13 @@
 
 //! Extension registry.
 //!
-//! Stores 
+//! Stores
 
 use std::collections::{HashSet, HashMap};
 use api::ext::{self, Extension};
+use api::error::Traced;
 use engine::Options;
-use engine::error::{ExtensionRegistryError, ExtensionRegistryErrorCode};
+use engine::error::ExtensionRegistryError;
 
 pub type Iter<'a> = ::std::collections::hash_map::Values<'a, String, Box<Extension>>;
 
@@ -29,14 +30,14 @@ pub struct ExtensionRegistry {
 
 impl ExtensionRegistry {
     /// Initialize new extension registry instance.
-    pub fn new<I>(iterable: I, options: &Options) -> Result<Self, ExtensionRegistryError> where
+    pub fn new<I>(iterable: I, options: &Options) -> Result<Self, Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=Box<Extension>>
     {
         let mut builder = Builder::default();
 
         for mut ext in iterable {
             if !builder.staged.ext_names.insert(ext.name().to_string())  {
-                return err!(ExtensionRegistryErrorCode::DuplicateExtension {
+                return traced_err!(ExtensionRegistryError::DuplicateExtension {
                     name: ext.name().to_string()
                 })
             };
@@ -111,7 +112,7 @@ pub struct Builder {
 impl Builder {
     #[allow(dead_code)]
     /// Register token parser instances with the engine.
-    fn push_token_parsers<I>(&mut self, iterable: I) -> Result<(), ExtensionRegistryError> where
+    fn push_token_parsers<I>(&mut self, iterable: I) -> Result<(), Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=(String, Box<ext::TokenParser>)>
     {
         for (k, v) in iterable {
@@ -119,14 +120,14 @@ impl Builder {
             // and don't want to clone!
             //
             // if let Some(prev) = self._token_parser_by_tags.insert(v.tag().to_string(), &v) {
-            //     return err!(ExtensionRegistryErrorCode::DuplicateTagHandler {
+            //     return traced_err!(ExtensionRegistryError::DuplicateTagHandler {
             //         prev: prev,
             //         ext_name: ext.name()
             //     })
             // }
 
             if let Some(prev) = self.staged.token_parsers.insert(k, v) {
-                return err!(ExtensionRegistryErrorCode::DuplicateTokenParser {
+                return traced_err!(ExtensionRegistryError::DuplicateTokenParser {
                     prev: prev
                 })
             }
@@ -137,7 +138,7 @@ impl Builder {
 
     #[allow(dead_code)]
     /// Register node visitor instances with the engine.
-    fn push_node_visitors<I>(&mut self, iterable: I) -> Result<(), ExtensionRegistryError> where
+    fn push_node_visitors<I>(&mut self, iterable: I) -> Result<(), Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=Box<ext::NodeVisitor>>
     {
         for v in iterable {
@@ -149,12 +150,12 @@ impl Builder {
 
     #[allow(dead_code)]
     /// Register filters with the engine.
-    fn push_filters<I>(&mut self, iterable: I) -> Result<(), ExtensionRegistryError> where
+    fn push_filters<I>(&mut self, iterable: I) -> Result<(), Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=(String, Box<ext::Filter>)>
     {
         for (k, v) in iterable {
             if let Some(prev) = self.staged.filters.insert(k, v) {
-                return err!(ExtensionRegistryErrorCode::DuplicateFilter {
+                return traced_err!(ExtensionRegistryError::DuplicateFilter {
                     prev: prev
                 })
             }
@@ -165,12 +166,12 @@ impl Builder {
 
     #[allow(dead_code)]
     /// Register tests with the engine.
-    fn push_tests<I>(&mut self, iterable: I) -> Result<(), ExtensionRegistryError> where
+    fn push_tests<I>(&mut self, iterable: I) -> Result<(), Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=(String, Box<ext::Test>)>
     {
         for (k, v) in iterable {
             if let Some(prev) = self.staged.tests.insert(k, v) {
-                return err!(ExtensionRegistryErrorCode::DuplicateTest {
+                return traced_err!(ExtensionRegistryError::DuplicateTest {
                     prev: prev
                 })
             }
@@ -181,12 +182,12 @@ impl Builder {
 
     #[allow(dead_code)]
     /// Register functions with the engine.
-    fn push_functions<I>(&mut self, iterable: I) -> Result<(), ExtensionRegistryError> where
+    fn push_functions<I>(&mut self, iterable: I) -> Result<(), Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=(String, Box<ext::Function>)>
     {
         for (k, v) in iterable {
             if let Some(prev) = self.staged.functions.insert(k, v) {
-                return err!(ExtensionRegistryErrorCode::DuplicateFunction {
+                return traced_err!(ExtensionRegistryError::DuplicateFunction {
                     prev: prev
                 })
             }
@@ -197,12 +198,12 @@ impl Builder {
 
     #[allow(dead_code)]
     /// Register unary operators with the engine.
-    fn push_operators_unary<I>(&mut self, iterable: I) -> Result<(), ExtensionRegistryError> where
+    fn push_operators_unary<I>(&mut self, iterable: I) -> Result<(), Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=ext::UnaryOperator>
     {
         for v in iterable {
             if let Some(prev) = self.staged.operators_unary.insert(v.repr.clone(), v) {
-                return err!(ExtensionRegistryErrorCode::DuplicateOperatorUnary {
+                return traced_err!(ExtensionRegistryError::DuplicateOperatorUnary {
                     prev: prev
                 })
             }
@@ -213,12 +214,12 @@ impl Builder {
 
     #[allow(dead_code)]
     /// Register binary operators with the engine.
-    fn push_operators_binary<I>(&mut self, iterable: I) -> Result<(), ExtensionRegistryError> where
+    fn push_operators_binary<I>(&mut self, iterable: I) -> Result<(), Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=ext::BinaryOperator>
     {
         for v in iterable {
             if let Some(prev) = self.staged.operators_binary.insert(v.repr.clone(), v) {
-                return err!(ExtensionRegistryErrorCode::DuplicateOperatorBinary {
+                return traced_err!(ExtensionRegistryError::DuplicateOperatorBinary {
                     prev: prev
                 })
             }
@@ -229,7 +230,7 @@ impl Builder {
 
     #[allow(dead_code)]
     /// Register global variables with the engine.
-    fn push_globals<I>(&mut self, _iterable: I) -> Result<(), ExtensionRegistryError> where
+    fn push_globals<I>(&mut self, _iterable: I) -> Result<(), Traced<ExtensionRegistryError>> where
         I: IntoIterator<Item=Box<ext::Global>>
     {
         unimplemented!()

@@ -6,21 +6,13 @@
 //! Typisation of lexer and syntax errors.
 
 use std::fmt::{self, Display};
-use error::Error;
-use error::ErrorCode;
+use std::error::Error;
 
 use api::token;
 use api::lexer::job::cursor;
 
-pub type SyntaxError = Error<SyntaxErrorCode>;
-pub type LexerError = Error<LexerErrorCode>;
-
-// impl GeneralizeTo<LexerErrorCode> for SyntaxErrorCode {
-//     fn generalize(&self) -> LexerErrorCode { LexerErrorCode::SyntaxError }
-// }
-
 #[derive(Debug)]
-pub enum SyntaxErrorCode {
+pub enum SyntaxError {
     UnexpectedCharacter {
         character: char,
         cursor: cursor::CursorDump,
@@ -50,38 +42,38 @@ pub enum SyntaxErrorCode {
     },
 }
 
-impl ErrorCode for SyntaxErrorCode {
+impl Error for SyntaxError {
     fn description(&self) -> &str {
         match *self {
-            SyntaxErrorCode::UnexpectedCharacter{..} => "Unexpected character.",
-            SyntaxErrorCode::UnexpectedBracket{..} => "Unexpected bracket.",
-            SyntaxErrorCode::UnexpectedEof{..} => "Unexpected end of template.",
-            SyntaxErrorCode::UnclosedBracket{..} => "Unclosed bracket.",
-            SyntaxErrorCode::UnclosedComment{..} => "Unclosed comment.",
-            SyntaxErrorCode::UnclosedBlock{..} => "Unclosed block.",
-            SyntaxErrorCode::UnclosedVariable{..} => "Unclosed variable.",
+            SyntaxError::UnexpectedCharacter{..} => "Unexpected character.",
+            SyntaxError::UnexpectedBracket{..} => "Unexpected bracket.",
+            SyntaxError::UnexpectedEof{..} => "Unexpected end of template.",
+            SyntaxError::UnclosedBracket{..} => "Unclosed bracket.",
+            SyntaxError::UnclosedComment{..} => "Unclosed comment.",
+            SyntaxError::UnclosedBlock{..} => "Unclosed block.",
+            SyntaxError::UnclosedVariable{..} => "Unclosed variable.",
         }
     }
 }
 
-impl Display for SyntaxErrorCode {
+impl Display for SyntaxError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            SyntaxErrorCode::UnexpectedCharacter {
+            SyntaxError::UnexpectedCharacter {
                 character, ref cursor
             } => {
                 write!(f, " found '{c}' at {cursor}.",
                     c = character, cursor = cursor)
             },
-            SyntaxErrorCode::UnexpectedBracket {
+            SyntaxError::UnexpectedBracket {
                 ref cursor, ref bracket
             } => {
                 write!(f, " Unexpected {bracket:?} at {cursor}.",
                     cursor = cursor, bracket = bracket)
             },
-            SyntaxErrorCode::UnexpectedEof {
+            SyntaxError::UnexpectedEof {
                 reason: ref r,
                 cursor: ref c
             } => {
@@ -89,7 +81,7 @@ impl Display for SyntaxErrorCode {
                     reason = r,
                     cursor = c)
             },
-            SyntaxErrorCode::UnclosedBracket {
+            SyntaxError::UnclosedBracket {
                 ref cursor, ref bracket, ref bracket_before, line_before
             } => {
                 write!(f, " Unclosed {b_before:?} from line\
@@ -99,19 +91,19 @@ impl Display for SyntaxErrorCode {
                     b_before = bracket_before,
                     line_before = line_before)
             },
-            SyntaxErrorCode::UnclosedComment {
+            SyntaxError::UnclosedComment {
                 ref cursor
             } => {
                 write!(f, " At {cursor}.",
                     cursor = cursor)
             },
-            SyntaxErrorCode::UnclosedBlock {
+            SyntaxError::UnclosedBlock {
                 ref cursor
             } => {
                 write!(f, " At {cursor}.",
                     cursor = cursor)
             },
-            SyntaxErrorCode::UnclosedVariable {
+            SyntaxError::UnclosedVariable {
                 ref cursor
             } => {
                 write!(f, " At {cursor}.",
@@ -122,7 +114,7 @@ impl Display for SyntaxErrorCode {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum LexerErrorCode {
+pub enum LexerError {
     PatternRegexError,
     _InvalidPatternMatch,
     InvalidValue {
@@ -130,24 +122,24 @@ pub enum LexerErrorCode {
     },
 }
 
-impl ErrorCode for LexerErrorCode {
+impl Error for LexerError {
     fn description(&self) -> &str {
         match *self {
-            LexerErrorCode::PatternRegexError => "Could not initialize lexer due to invalid regular expression.",
-            LexerErrorCode::_InvalidPatternMatch => "Invalid pattern match.",
-            LexerErrorCode::InvalidValue{..} => "Invalid value.",
+            LexerError::PatternRegexError => "Could not initialize lexer due to invalid regular expression.",
+            LexerError::_InvalidPatternMatch => "Invalid pattern match.",
+            LexerError::InvalidValue{..} => "Invalid value.",
         }
     }
 }
 
-impl Display for LexerErrorCode {
+impl Display for LexerError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         try!(write!(f, "{}", self.description()));
 
         match *self {
-            LexerErrorCode::PatternRegexError => Ok(()),
-            LexerErrorCode::_InvalidPatternMatch => Ok(()),
-            LexerErrorCode::InvalidValue {
+            LexerError::PatternRegexError => Ok(()),
+            LexerError::_InvalidPatternMatch => Ok(()),
+            LexerError::InvalidValue {
                 ref value
             } => {
                 write!(f, " Found value {}", value)
