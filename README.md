@@ -8,7 +8,7 @@ A **template engine** for everyone writing web applications with Rust. By design
 * fast
 * and secure
 
-This library is derived from [Twig (for PHP)][twigphp] and intended to become a _fully compatible_ port - as far as it makes sense.
+This library is derived from [Twig (for PHP)][twigphp] and intended to become a [_fully compatible_][compatibility] port - as far as it makes sense.
 
 ## Documentation
 
@@ -20,7 +20,8 @@ This is an effort to merge two alpha-grade implementations and to proceed from t
 * https://github.com/Nercury/twig-rs
 * https://github.com/colin-kiegel/twig-rust
 
-see issues and pull-requests for more information about next steps
+see issues and pull-requests for more information about next steps.
 
 [twigphp]: http://twig.sensiolabs.org/documentation
 [documentation]: http://rust-web.github.io/twig
+[compatibility]: https://github.com/rust-web/twig/blob/master/COMPATIBILITY.md
