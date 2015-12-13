@@ -60,3 +60,6 @@
 //! [twigphp]: http://twig.sensiolabs.org/documentation
 
 #[macro_use] pub mod api;
+pub mod engine;
+
+pub use self::engine::Engine;
