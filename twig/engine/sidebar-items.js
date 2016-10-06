@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["error","Typisation of syntax errors."],["extension_registry","Extension registry."],["options","Twig configuration options."]],"struct":[["Engine",""]]});

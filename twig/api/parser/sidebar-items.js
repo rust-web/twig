@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["error","Typisation of parser errors."],["expression_parser","Expression parser."],["job","A parser job."],["options","Options of the parser."]],"struct":[["Parser",""]]});
