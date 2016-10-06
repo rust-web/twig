@@ -20,7 +20,6 @@ pub use self::error::{TwigError, ExtensionRegistryError};
 pub use self::options::Options;
 pub use self::extension_registry::ExtensionRegistry;
 
-
 #[derive(Debug)]
 pub struct Engine {
     options: Options,

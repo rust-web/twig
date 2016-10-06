@@ -89,7 +89,6 @@ pub trait Dump {
 ///
 /// Wrapper around some error type `T` implementing `std::error::Error`.
 /// * Adds support for a backtrace.
-/// * Automatically derefs to the inner error.
 pub struct Traced<T>
     where T: Error
 {
@@ -151,13 +150,15 @@ impl<T> Traced<T> where
     }
 }
 
-impl<T> Deref for Traced<T> where
+impl<T> Error for Traced<T> where
     T: Error
 {
-    type Target = T;
+    fn description(&self) -> &str {
+        self.error.description()
+    }
 
-    fn deref(&self) -> &Self::Target {
-        &self.error
+    fn cause(&self) -> Option<&Error> {
+        self.error.cause()
     }
 }
 

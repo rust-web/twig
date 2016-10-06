@@ -14,69 +14,41 @@ use api::lexer::LexerError;
 use api::ext;
 use std::convert::From;
 
-
-#[derive(Debug)]
-pub enum TwigError {
-    Loader(LoaderError),
-    LoaderNotInitialized,
-    Lexer(LexerError),
-    LexerNotInitialized,
-    Parser(ParserError),
-    Runtime,
-    ExtensionRegistry(ExtensionRegistryError),
-}
-
-impl From<LoaderError> for TwigError {
-    fn from(err: LoaderError) -> TwigError {
-        TwigError::Loader(err)
-    }
-}
-
-impl From<LexerError> for TwigError {
-    fn from(err: LexerError) -> TwigError {
-        TwigError::Lexer(err)
-    }
-}
-
-impl From<ParserError> for TwigError {
-    fn from(err: ParserError) -> TwigError {
-        TwigError::Parser(err)
-    }
-}
-
-impl From<ExtensionRegistryError> for TwigError {
-    fn from(err: ExtensionRegistryError) -> TwigError {
-        TwigError::ExtensionRegistry(err)
-    }
-}
-
-impl Error for TwigError {
-    fn description(&self) -> &str {
-        match *self {
-            TwigError::Loader(..) => "Twig loader error.",
-            TwigError::LoaderNotInitialized => "The template loader must be initializied prior usage.",
-            TwigError::Lexer(..) => "Twig lexer error.",
-            TwigError::LexerNotInitialized => "The template lexer must be initializied prior usage.",
-            TwigError::Parser(..) => "Twig parser error.",
-            TwigError::Runtime => "Twig runtime error.",
-            TwigError::ExtensionRegistry(..) => "Twig extension registry error."
+quick_error! {
+    #[derive(Debug)]
+    pub enum TwigError {
+        Loader(cause: LoaderError) {
+            description("Twig loader error")
+            display(me) -> ("{}: {}", me.description(), cause)
+            from()
+            cause(&*cause)
         }
-    }
-}
-
-impl Display for TwigError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        try!(write!(f, "{}", self.description()));
-
-        match *self {
-            TwigError::Loader(ref e) => e.fmt(f),
-            TwigError::Lexer(ref e) => e.fmt(f),
-            TwigError::Parser(ref e) => e.fmt(f),
-            TwigError::ExtensionRegistry(ref e) => e.fmt(f),
-            TwigError::LoaderNotInitialized
-            | TwigError::LexerNotInitialized
-            | TwigError::Runtime
-            => Ok(())
+        LoaderNotInitialized {
+            description("The template loader must be initializied prior usage.")
+        }
+        Lexer(cause: LexerError) {
+            description("Twig lexer error")
+            display(me) -> ("{}: {}", me.description(), cause)
+            from()
+            cause(&*cause)
+        }
+        LexerNotInitialized {
+            description("The template lexer must be initializied prior usage.")
+        }
+        Parser(cause: ParserError) {
+            description("Twig parser error")
+            display(me) -> ("{}: {}", me.description(), cause)
+            from()
+            cause(&*cause)
+        }
+        Runtime {
+            description("Twig runtime error.")
+        }
+        ExtensionRegistry(cause: ExtensionRegistryError) {
+            description("Twig extension registry error")
+            display(me) -> ("{}: {}", me.description(), cause)
+            from()
+            cause(&*cause)
         }
     }
 }

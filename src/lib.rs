@@ -1,4 +1,4 @@
-// This file is part of rust-web/twig
+// This file is part of Twig (ported to Rust).
 //
 // For the copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
@@ -69,9 +69,10 @@
 //! [changelog]: https://github.com/rust-web/twig/blob/master/CHANGELOG.md
 //! [twigphp]: http://twig.sensiolabs.org/documentation
 
+#[macro_use] extern crate quick_error;
 extern crate regex;
 
-#[macro_use] pub mod api; // should be first :-)
+#[macro_use] pub mod api;
 pub mod engine;
 pub mod extension;
 pub mod loader;
