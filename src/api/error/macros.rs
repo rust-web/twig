@@ -74,16 +74,6 @@ macro_rules! loc {
 /// If the internal error type `T` implements `Into<NewError>`, then `try_traced!` will do implicit
 /// conversions according to the expected result type of the current function (similar to `try!`).
 ///
-/// # Pseudo-Code
-///
-/// ```ignore
-/// fn foo() -> Result<(), Error<CODE_A>> {
-///    let x: Result<(), Error<CODE_B>> = ...;
-///
-///    // `CODE_B` must implement `twig::error::GeneralizeTo<CODE_A>`
-///    try_chain!(x); // try! would fail here, due to incompatible error types
-/// }
-/// ```
 /// # Examples
 ///
 /// ```rust,macro_test

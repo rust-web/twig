@@ -17,6 +17,16 @@
 //!   * fast
 //!   * and secure
 //!
+//! ## Getting Started
+//!
+//! ```
+//! use twig::{Setup, Engine};
+//!
+//! let setup = Setup::default();
+//! let twig = setup.init_engine().unwrap();
+//! // ..
+//! ```
+//!
 //! ## Syntax and Semantics
 //!
 //! Twig uses a syntax similar to the Django and Jinja template languages which inspired the Twig runtime environment.
@@ -60,8 +70,14 @@
 //! [twigphp]: http://twig.sensiolabs.org/documentation
 
 #[macro_use] extern crate quick_error;
+extern crate regex;
 
 #[macro_use] pub mod api;
 pub mod engine;
+pub mod extension;
+pub mod loader;
+pub mod setup;
+pub mod template;
 
-pub use self::engine::Engine;
+pub use engine::Engine;
+pub use setup::Setup;

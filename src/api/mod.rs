@@ -6,4 +6,13 @@
 //! The extensions API for the Twig Template Engine.
 
 #[macro_use] pub mod error;
-pub use self::error::Traced;
+pub mod ext;
+pub mod lexer;
+pub mod node;
+pub mod parser;
+pub mod token;
+pub use self::ext::Extension;
+pub use self::lexer::Lexer;
+pub use self::parser::Parser;
+pub use self::token::Token;
+pub use self::node::Node;
