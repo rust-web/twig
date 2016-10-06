@@ -1,12 +1,11 @@
 [package]
-name = "twig"
-version = "0.1.0"
+authors = ["Rust Twig Team", "Nerijus Arlauskas <nercury@gmail.com>", "Colin Kiegel <kiegel@gmx.de>"]
 description = "Twig templating engine for Rust; work in progress."
 documentation = ""
-repository = "https://github.com/rust-web/twig"
-authors = [
-    "Rust Twig Team",
-    "Nerijus Arlauskas <nercury@gmail.com>",
-    "Colin Kiegel <kiegel@gmx.de>"
-]
 license = "BSD-3-Clause"
+name = "twig"
+repository = "https://github.com/rust-web/twig"
+version = "0.1.0"
+
+[dependencies]
+quick-error = "0.*"
